@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sentinel — Fraudedetectie</title>
+<style>
+  /* ---------- Palet: aubergine-noir + lavendel ---------- */
+  :root {
+    --bg:        #15111c;
+    --bg2:       #1d1727;
+    --surface:   #221b30;
+    --text:      #ece8f2;
+    --muted:     #9b91ad;
+    --faint:     #6f6483;
+    --line:      rgba(185,163,240,0.13);
+    --accent:    #b9a3f0;
+    --accent-dp: #8b72d6;
+    --accent-soft: rgba(185,163,240,0.14);
+    --verdacht:  #9a86c8;
+    --nav-h:     66px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+  ::selection { background: rgba(185,163,240,0.28); color: #fff; }
+
+  body { background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .mono { font-family: "SF Mono","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+    font-feature-settings: "tnum" 1; letter-spacing: -0.01em; }
+
+  /* ---------- Navbar ---------- */
+  .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); z-index: 60;
+    display: flex; align-items: center; gap: 28px; padding: 0 8vw;
+    border-bottom: 1px solid transparent; transition: background .4s ease, border-color .4s ease, backdrop-filter .4s ease; }
+  .nav.scrolled { background: rgba(18,14,24,0.82); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--text); text-decoration: none; }
+  .brand svg { display: block; }
+  .nav .links { display: flex; gap: 26px; margin-left: 14px; }
+  .nav .links a { color: var(--muted); text-decoration: none; font-size: 14.5px; letter-spacing: 0.01em;
+    position: relative; transition: color .25s ease; }
+  .nav .links a::after { content:""; position: absolute; left: 0; bottom: -6px; height: 1px; width: 0; background: var(--accent); transition: width .3s ease; }
+  .nav .links a:hover { color: var(--text); } .nav .links a:hover::after { width: 100%; }
+  .nav .spacer { flex: 1; }
+  .cta { font: inherit; font-size: 14.5px; font-weight: 600; color: #1a1426; background: var(--accent);
+    border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; letter-spacing: 0.01em;
+    transition: transform .2s ease, box-shadow .25s ease, background .25s ease; }
+  .cta:hover { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(185,163,240,0.32); background: #c6b3f5; }
+  .cta.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .cta.ghost:hover { background: rgba(185,163,240,0.08); box-shadow: none; }
+
+  /* ---------- Scroll-voortgang ---------- */
+  .progress { position: fixed; top: 0; left: 0; height: 2.5px; width: 0%; z-index: 70;
+    background: linear-gradient(90deg, var(--accent-dp), var(--accent)); box-shadow: 0 0 12px rgba(185,163,240,0.6); }
+
+  /* ---------- Aurora ---------- */
+  .aurora { position: fixed; inset: -20vh -20vw; z-index: 0; pointer-events: none; filter: blur(90px); opacity: 0.85; will-change: transform; }
+  .aurora b { position: absolute; border-radius: 50%; display: block; mix-blend-mode: screen; }
+  .aurora .b1 { width: 52vw; height: 52vw; left: -8vw; top: -6vh; background: radial-gradient(circle, rgba(139,114,214,0.42), transparent 66%); animation: drift1 34s ease-in-out infinite; }
+  .aurora .b2 { width: 44vw; height: 44vw; right: -6vw; top: 18vh; background: radial-gradient(circle, rgba(185,163,240,0.30), transparent 66%); animation: drift2 46s ease-in-out infinite; }
+  .aurora .b3 { width: 40vw; height: 40vw; left: 24vw; bottom: -14vh; background: radial-gradient(circle, rgba(110,86,170,0.34), transparent 66%); animation: drift3 40s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(6vw,4vh) scale(1.12);} }
+  @keyframes drift2 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-5vw,6vh) scale(1.08);} }
+  @keyframes drift3 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(4vw,-5vh) scale(1.15);} }
+
+  .veil { position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background: radial-gradient(120% 100% at 50% 0%, transparent 58%, rgba(8,6,12,0.55) 100%); }
+
+  main { position: relative; z-index: 1; }
+  section { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 12vh 8vw; max-width: 1320px; margin: 0 auto; }
+
+  .eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 12.5px; letter-spacing: 0.34em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 30px; }
+  .eyebrow .tick { width: 26px; height: 1px; background: var(--accent); display: inline-block;
+    transform: scaleX(0); transform-origin: left; transition: transform 1s cubic-bezier(.16,1,.3,1); }
+  .eyebrow.in .tick { transform: scaleX(1); }
+
+  /* ---------- Kinetische typografie ---------- */
+  .kin { font-weight: 600; letter-spacing: -0.03em; }
+  .kin .ln { display: block; overflow: hidden; padding-bottom: 0.04em; }
+  .kin .ln > span { display: block; transform: translateY(115%); transition: transform 1.05s cubic-bezier(.16,1,.3,1); }
+  .kin.in .ln > span { transform: translateY(0); }
+  .kin.in .ln:nth-child(2) > span { transition-delay: .10s; }
+  .kin.in .ln:nth-child(3) > span { transition-delay: .20s; }
+  h1.kin { font-size: clamp(42px, 6.6vw, 92px); line-height: 0.98; }
+  h2.kin { font-size: clamp(32px, 5.2vw, 72px); line-height: 1.02; max-width: 18ch; }
+  .accent-word { color: var(--accent); font-style: normal; }
+
+  .lead { font-size: clamp(18px, 2vw, 23px); color: var(--muted); max-width: 44ch; margin-top: 30px; }
+  p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
+  .body b, .lead b { color: var(--text); font-weight: 600; }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  .d1 { transition-delay: .10s; } .d2 { transition-delay: .20s; } .d3 { transition-delay: .30s; } .d4 { transition-delay: .42s; }
+
+  /* ================= HERO ================= */
+  .hero { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 5vw; align-items: center; padding-top: var(--nav-h); }
+  .hero-copy { position: relative; z-index: 2; }
+  .scrollhint { margin-top: 56px; display: flex; align-items: center; gap: 16px; color: var(--faint);
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .scrollhint .bar { width: 1px; height: 48px; background: rgba(185,163,240,0.25); position: relative; overflow: hidden; }
+  .scrollhint .bar::after { content:""; position:absolute; top:-48px; left:0; width:1px; height:48px; background: var(--accent);
+    animation: drop 2.4s cubic-bezier(.7,0,.3,1) infinite; }
+  @keyframes drop { 0%{ top:-48px;} 60%,100%{ top:48px;} }
+
+  /* --- Scope / radar (clean, met echte scan) --- */
+  .hero-visual { position: relative; display: flex; align-items: center; justify-content: center; perspective: 1100px; }
+  .scope { position: relative; width: min(44vw, 500px); aspect-ratio: 1; border-radius: 50%;
+    transform-style: preserve-3d; transition: transform .25s ease-out;
+    opacity: 0; animation: scopeIn 1.4s cubic-bezier(.16,1,.3,1) .25s forwards; }
+  @keyframes scopeIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  .scope::before { content:""; position: absolute; inset: -8%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,114,214,0.18), transparent 70%); }
+  .scope-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--line); }
+  .scope-ring.r2 { inset: 17%; } .scope-ring.r3 { inset: 34%; } .scope-ring.r4 { inset: 51%; opacity: 0.65; }
+  .scope-cross { position: absolute; background: var(--line); }
+  .scope-cross.h { left: 3%; right: 3%; top: 50%; height: 1px; }
+  .scope-cross.v { top: 3%; bottom: 3%; left: 50%; width: 1px; }
+  .scope-face { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; }
+  .scan { position: absolute; inset: 0; border-radius: 50%; will-change: transform;
+    background: conic-gradient(from 90deg, rgba(185,163,240,0.34), rgba(185,163,240,0.05) 48deg, transparent 82deg, transparent 360deg); }
+  .scan::after { content:""; position: absolute; top: 50%; left: 50%; width: 50%; height: 1.5px; transform: translateY(-50%);
+    transform-origin: 0 50%; background: linear-gradient(90deg, rgba(214,199,255,0.85), rgba(185,163,240,0)); }
+  .scope svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .slabel text { fill: var(--accent); font: 600 13px "SF Mono",ui-monospace,Menlo,monospace; }
+  .slabel line { stroke: var(--accent); stroke-width: 1; opacity: 0.6; }
+  .sring { fill: none; stroke: var(--accent); stroke-width: 1.4; transform-box: fill-box; transform-origin: center;
+    animation: sring 2.6s ease-out infinite; }
+  @keyframes sring { 0%{ opacity:.7; transform: scale(.4);} 70%{ opacity:0; transform: scale(2.4);} 100%{ opacity:0; } }
+
+  /* ================= CIJFERS ================= */
+  .figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; border-top: 1px solid var(--line); }
+  .fig { padding: 36px 26px 30px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); transition: background .4s ease; }
+  .fig:first-child { padding-left: 0; } .fig:last-child { border-right: none; }
+  .fig:hover { background: rgba(185,163,240,0.04); }
+  .fig .num { font-size: clamp(40px, 5vw, 66px); font-weight: 500; letter-spacing: -0.04em; line-height: 1; }
+  .fig.alert .num { color: var(--accent); }
+  .fig .cap { margin-top: 14px; font-size: 13.5px; letter-spacing: 0.03em; color: var(--muted); }
+  .fig .track { height: 2px; margin-top: 22px; background: rgba(185,163,240,0.12); position: relative; overflow: hidden; }
+  .fig .track i { position: absolute; inset: 0 100% 0 0; background: var(--accent); transition: right 1.4s cubic-bezier(.16,1,.3,1) .2s; }
+  .fig.in .track i { right: var(--w, 70%); }
+
+  /* ================= ISOLATIE ================= */
+  .iso-wrap { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 6vw; align-items: center; margin-top: 12px; }
+  .stage { position: relative; border: 1px solid var(--line); border-radius: 14px;
+    background: linear-gradient(160deg, rgba(34,27,48,0.6), rgba(21,17,28,0.25)); padding: 22px; overflow: hidden; }
+  .stage svg { width: 100%; height: auto; display: block; position: relative; }
+  .stage .badge { position: absolute; left: 22px; bottom: 18px; font-size: 12.5px; letter-spacing: 0.05em; color: var(--muted); }
+  .stage .badge b { color: var(--accent); font-weight: 600; }
+  .region { fill: rgba(185,163,240,0.07); opacity: 0; transition: opacity .6s ease; }
+  .region.show { opacity: 1; }
+  .dot { opacity: 0; transform: scale(0); transform-box: fill-box; transform-origin: center;
+    transition: opacity .5s ease, transform .55s cubic-bezier(.16,1,.3,1); }
+  .dot.show { opacity: 1; transform: scale(1); }
+  .stage.focus .dot.normal { opacity: 0.16; }
+  .dot.anom { fill: var(--accent); }
+  .stage.focus .dot.anom { opacity: 1; transform: scale(1.5); filter: drop-shadow(0 0 7px rgba(185,163,240,0.9)); }
+  .split-l { stroke: var(--accent); stroke-width: 1.4; opacity: 0.55;
+    stroke-dasharray: var(--len); stroke-dashoffset: var(--len); transition: stroke-dashoffset .7s cubic-bezier(.6,0,.2,1); }
+  .split-l.draw { stroke-dashoffset: 0; }
+  .head { fill: #e2d5ff; opacity: 0; transform-box: fill-box; transform-origin: center;
+    filter: drop-shadow(0 0 6px rgba(185,163,240,0.9)); transition: transform .7s cubic-bezier(.6,0,.2,1), opacity .3s ease; }
+  .cell { fill: rgba(185,163,240,0.12); stroke: var(--accent); stroke-width: 1.5; opacity: 0; transition: opacity .6s ease; }
+  .cell.show { opacity: 1; }
+  .ring { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .ring.go { animation: ring 2.4s ease-out infinite; }
+  @keyframes ring { 0%{ opacity:.7; transform: scale(0.4);} 70%{ opacity:0; transform: scale(2);} 100%{ opacity:0; } }
+
+  /* ================= TRANSACTIES ================= */
+  .cards { margin-top: 48px; }
+  .card { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 0 40px; align-items: start;
+    padding: 34px 0; border-top: 1px solid var(--line); transition: padding-left .45s cubic-bezier(.16,1,.3,1); }
+  .card:last-child { border-bottom: 1px solid var(--line); }
+  .card::before { content:""; position: absolute; left: 0; top: 50%; height: 0; width: 2px; background: var(--accent);
+    transform: translateY(-50%); transition: height .45s cubic-bezier(.16,1,.3,1); }
+  .card:hover { padding-left: 26px; }
+  .card:hover::before { height: 64%; }
+  .card .rank { font-size: 14px; color: var(--faint); padding-top: 8px; transition: color .3s ease; }
+  .card:hover .rank { color: var(--accent); }
+  .card .merchant { font-size: clamp(22px,2.6vw,32px); font-weight: 600; letter-spacing: -0.02em; transition: color .3s ease; }
+  .card:hover .merchant { color: var(--accent); }
+  .card .meta { margin-top: 8px; color: var(--muted); font-size: 14px; }
+  .card .meta span { margin-right: 18px; }
+  .card .why { margin-top: 16px; color: var(--muted); max-width: 58ch; font-size: 15.5px; }
+  .card .riskline { margin-top: 20px; max-width: 320px; }
+  .card .riskline .t { display: flex; justify-content: space-between; font-size: 12px; color: var(--faint);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+  .card .bar { height: 3px; background: rgba(185,163,240,0.12); position: relative; overflow: hidden; }
+  .card .bar i { position: absolute; inset: 0 100% 0 0; background: linear-gradient(90deg, var(--accent-dp), var(--accent));
+    transition: right 1.3s cubic-bezier(.16,1,.3,1) .15s; }
+  .card.in .bar i { right: var(--w); }
+  .card .score { text-align: right; min-width: 130px; }
+  .card .score .amt { font-size: clamp(20px,2.2vw,26px); font-weight: 600; }
+  .card .score .lvl { margin-top: 12px; display: inline-block; font-size: 11.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); padding-bottom: 5px; border-bottom: 2px solid var(--accent); }
+  .card .score .s { margin-top: 14px; font-size: 13px; color: var(--faint); }
+
+  /* ================= SLOT / CTA ================= */
+  .outro { justify-content: center; align-items: flex-start; text-align: left; }
+  .cta-big { margin-top: 40px; display: inline-flex; align-items: center; gap: 14px; font: inherit; font-size: 17px; font-weight: 600;
+    color: #1a1426; background: var(--accent); border: none; padding: 16px 30px; border-radius: 10px; cursor: pointer;
+    transition: transform .2s ease, box-shadow .3s ease, background .25s ease; }
+  .cta-big:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(185,163,240,0.32); background: #c6b3f5; }
+  .cta-big .arr { transition: transform .25s ease; }
+  .cta-big:hover .arr { transform: translateX(4px); }
+  .cta-note { margin-top: 18px; color: var(--faint); font-size: 14px; }
+  .sign { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--faint); font-size: 14px; }
+  .sign b { color: var(--text); font-weight: 600; }
+
+  /* ================= DASHBOARD ================= */
+  .dash { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  body.dash-open #story { display: none; }
+  body.dash-open .dash { display: block; }
+  .dash-inner { max-width: 1320px; margin: 0 auto; padding: calc(var(--nav-h) + 56px) 8vw 90px; }
+  .dash-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 44px; }
+  .dash-head h2 { font-size: clamp(28px, 4vw, 46px); font-weight: 600; letter-spacing: -0.025em; margin-top: 6px; }
+  .da { opacity: 0; transform: translateY(20px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  .da.in { opacity: 1; transform: none; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 22px; }
+  .kpi { border: 1px solid var(--line); border-radius: 14px; padding: 24px 24px 22px; background: rgba(34,27,48,0.4);
+    transition: border-color .3s ease, background .3s ease; }
+  .kpi:hover { border-color: var(--accent-soft); background: rgba(34,27,48,0.62); }
+  .kpi .l { font-size: 13px; color: var(--muted); letter-spacing: 0.02em; }
+  .kpi .v { font-size: clamp(30px, 3.6vw, 44px); font-weight: 600; letter-spacing: -0.03em; margin-top: 14px; line-height: 1; }
+  .kpi.accent .v { color: var(--accent); }
+  .kpi .track { height: 3px; margin-top: 20px; background: rgba(185,163,240,0.12); position: relative; overflow: hidden; border-radius: 2px; }
+  .kpi .track i { position: absolute; inset: 0 100% 0 0; background: linear-gradient(90deg,var(--accent-dp),var(--accent)); transition: right 1.2s cubic-bezier(.16,1,.3,1) .2s; }
+  .kpi.show .track i { right: var(--w); }
+
+  .dash-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 18px; margin-top: 18px; }
+  .panel { border: 1px solid var(--line); border-radius: 14px; background: rgba(29,23,39,0.5); padding: 26px 26px 28px; }
+  .panel .ph { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .panel .ph h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .panel .ph .sub { font-size: 13px; color: var(--faint); }
+
+  /* transactietabel */
+  .tx { width: 100%; border-collapse: collapse; }
+  .tx th { text-align: left; font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint);
+    font-weight: 500; padding: 0 12px 14px 0; border-bottom: 1px solid var(--line); }
+  .tx th.r, .tx td.r { text-align: right; padding-right: 0; }
+  .tx td { padding: 15px 12px 15px 0; border-bottom: 1px solid rgba(185,163,240,0.07); font-size: 14.5px; vertical-align: middle; }
+  .tx tr:last-child td { border-bottom: none; }
+  .tx .m { font-weight: 600; } .tx .sub { color: var(--faint); font-size: 12.5px; margin-top: 2px; }
+  .tx .st { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .st.fraude { color: var(--accent); } .st.verdacht { color: var(--verdacht); } .st.normaal { color: var(--faint); }
+  .rb { width: 84px; height: 4px; background: rgba(185,163,240,0.12); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; }
+  .rb i { display: block; height: 100%; width: 0; background: linear-gradient(90deg,var(--accent-dp),var(--accent)); transition: width 1s cubic-bezier(.16,1,.3,1) .3s; }
+  .dash.go .rb i { width: var(--w); }
+
+  /* per-uur staafjes */
+  .hours { display: flex; align-items: flex-end; gap: 5px; height: 150px; margin-top: 6px; }
+  .hours .h { flex: 1; background: rgba(185,163,240,0.16); border-radius: 3px 3px 0 0; transform: scaleY(0); transform-origin: bottom;
+    transition: transform .8s cubic-bezier(.16,1,.3,1); }
+  .hours .h.flag { background: linear-gradient(var(--accent), var(--accent-dp)); }
+  .dash.go .hours .h { transform: scaleY(1); }
+  .hours-x { display: flex; justify-content: space-between; font-size: 11px; color: var(--faint); margin-top: 10px; }
+
+  /* verdeling */
+  .dist { height: 12px; border-radius: 6px; overflow: hidden; display: flex; margin-top: 4px; background: rgba(185,163,240,0.1); }
+  .dist span { height: 100%; width: 0; transition: width 1s cubic-bezier(.16,1,.3,1) .3s; }
+  .dist .n { background: #4a4360; } .dist .v { background: var(--verdacht); } .dist .f { background: var(--accent); }
+  .dash.go .dist span { width: var(--w); }
+  .legend { display: flex; gap: 22px; margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
+
+  @media (max-width: 920px) {
+    .nav .links { display: none; }
+    .hero { grid-template-columns: 1fr; gap: 8vh; }
+    .hero-visual { order: -1; }
+    .scope { width: min(74vw, 360px); }
+    .figures { grid-template-columns: 1fr 1fr; }
+    .fig:first-child { padding-left: 26px; }
+    .iso-wrap { grid-template-columns: 1fr; gap: 40px; }
+    .card { grid-template-columns: 1fr; gap: 10px; }
+    .card .score { text-align: left; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sring, .ring, .scrollhint .bar::after { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="progress" id="progress"></div>
+
+  <!-- Navbar -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" id="brand">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle cx="11" cy="11" r="9.2" stroke="#b9a3f0" stroke-width="1.4" opacity="0.5"/>
+        <path d="M11 11 L18 7" stroke="#b9a3f0" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="11" cy="11" r="2" fill="#b9a3f0"/>
+      </svg>
+      Sentinel
+    </a>
+    <nav class="links">
+      <a href="#cijfers">Cijfers</a>
+      <a href="#model">Hoe het werkt</a>
+      <a href="#signalen">Signalen</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="cta" id="navTry">Probeer het uit</button>
+  </header>
+
+  <div class="aurora" id="aurora"><b class="b1"></b><b class="b2"></b><b class="b3"></b></div>
+  <div class="veil"></div>
+
+  <!-- ================= VERHAAL ================= -->
+  <main id="story">
+    <span id="top"></span>
+
+    <!-- 1 · HERO -->
+    <section class="hero">
+      <div class="hero-copy">
+        <h1 class="kin">
+          <span class="ln"><span>Tweehonderd betalingen.</span></span>
+          <span class="ln"><span><em class="accent-word">Eén</em> die niet klopt.</span></span>
+        </h1>
+        <p class="lead reveal d2">Sentinel zoekt geen bekende fraude. Het leert hoe <b>gewoon</b> eruitziet — en zet alles apart wat daarvan afdwaalt.</p>
+        <div class="scrollhint reveal d3"><span class="bar"></span>Scroll om mee te kijken</div>
+      </div>
+      <div class="hero-visual">
+        <div class="scope" id="scope">
+          <div class="scope-ring"></div><div class="scope-ring r2"></div><div class="scope-ring r3"></div><div class="scope-ring r4"></div>
+          <div class="scope-cross h"></div><div class="scope-cross v"></div>
+          <div class="scope-face"><div class="scan" id="scan"></div></div>
+          <svg id="scopeSvg" viewBox="0 0 400 400"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · CIJFERS -->
+    <section id="cijfers">
+      <div class="eyebrow"><span class="tick"></span>Wat het model zag</div>
+      <h2 class="kin">
+        <span class="ln"><span>Eén nacht aan transacties,</span></span>
+        <span class="ln"><span>in seconden gewogen.</span></span>
+      </h2>
+      <div class="figures">
+        <div class="fig"><div class="num mono" data-target="200">0</div><div class="cap">geanalyseerd</div><div class="track" style="--w:100%"><i></i></div></div>
+        <div class="fig"><div class="num mono" data-target="14">0</div><div class="cap">gemarkeerd · 7%</div><div class="track" style="--w:7%"><i></i></div></div>
+        <div class="fig alert"><div class="num mono" data-target="9">0</div><div class="cap">fraude-alerts</div><div class="track" style="--w:64%"><i></i></div></div>
+        <div class="fig"><div class="num mono" data-target="16480" data-prefix="€ " data-group="1">0</div><div class="cap">gemarkeerd bedrag</div><div class="track" style="--w:48%"><i></i></div></div>
+      </div>
+      <p class="body reveal d3">Niet omdat ze op eerdere fraude leken — er was geen voorbeeld. Maar omdat ze zich anders gedroegen dan alle andere.</p>
+    </section>
+
+    <!-- 3 · HET ISOLATIE-MOMENT -->
+    <section id="model">
+      <div class="eyebrow"><span class="tick"></span>Hoe het model denkt</div>
+      <div class="iso-wrap">
+        <div>
+          <h2 class="kin">
+            <span class="ln"><span>Het kent geen fraude.</span></span>
+            <span class="ln"><span>Alleen <em class="accent-word">gewoon</em>.</span></span>
+          </h2>
+          <p class="body reveal d2">Een <b>Isolation Forest</b> stelt willekeurige vragen — hoger of lager dan deze grens, voor of na dit uur? Een doodgewone betaling lijkt op honderden andere en is pas na véél vragen los te pellen.</p>
+          <p class="body reveal d3">Een uitschieter staat al na een paar snedes alleen. Hoe sneller iets te <b>isoleren</b> is, hoe verdachter. Kijk maar mee →</p>
+        </div>
+        <div class="stage" id="stage">
+          <svg id="isoSvg" viewBox="0 0 560 380" aria-hidden="true"></svg>
+          <div class="badge" id="isoBadge">42 gewone betalingen</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · VERDACHTE TRANSACTIES -->
+    <section id="signalen">
+      <div class="eyebrow"><span class="tick"></span>De drie die opvielen</div>
+      <h2 class="kin">
+        <span class="ln"><span>Elk detail normaal.</span></span>
+        <span class="ln"><span>Samen onmogelijk.</span></span>
+      </h2>
+      <div class="cards">
+        <div class="card reveal" style="--w:13%">
+          <div class="rank mono">01</div>
+          <div>
+            <div class="merchant">Crypto-X Ltd</div>
+            <div class="meta mono"><span>Lagos</span><span>02:14</span><span>38× / dag</span></div>
+            <div class="why">Een hoog bedrag, midden in de nacht, naar een locatie die het model nooit eerder zag — en bijna veertig keer op één dag. Elk kenmerk apart kan; deze combinatie niet.</div>
+            <div class="riskline"><div class="t"><span>Risico</span><span class="mono">87</span></div><div class="bar"><i></i></div></div>
+          </div>
+          <div class="score"><div class="amt mono">€ 1.700</div><div class="lvl">Fraude</div><div class="s mono">score −0.74</div></div>
+        </div>
+        <div class="card reveal" style="--w:18%">
+          <div class="rank mono">02</div>
+          <div>
+            <div class="merchant">WU&nbsp;Transfer</div>
+            <div class="meta mono"><span>Kiev</span><span>03:41</span><span>31× / dag</span></div>
+            <div class="why">Een overboeking ver buiten het normale patroon, op een tijdstip waarop dit account vrijwel nooit actief is. De frequentie verraadt geautomatiseerd gedrag.</div>
+            <div class="riskline"><div class="t"><span>Risico</span><span class="mono">82</span></div><div class="bar"><i></i></div></div>
+          </div>
+          <div class="score"><div class="amt mono">€ 1.520</div><div class="lvl">Fraude</div><div class="s mono">score −0.69</div></div>
+        </div>
+        <div class="card reveal" style="--w:8%">
+          <div class="rank mono">03</div>
+          <div>
+            <div class="merchant">Onbekende begunstigde</div>
+            <div class="meta mono"><span>—</span><span>01:58</span><span>26× / dag</span></div>
+            <div class="why">Geen herkenbare tegenpartij, een bedrag bijna vijftig keer hoger dan gebruikelijk, en een locatiescore tegen nul. Het model isoleert deze betaling vrijwel meteen.</div>
+            <div class="riskline"><div class="t"><span>Risico</span><span class="mono">92</span></div><div class="bar"><i></i></div></div>
+          </div>
+          <div class="score"><div class="amt mono">€ 1.880</div><div class="lvl">Fraude</div><div class="s mono">score −0.81</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · SLOT / CTA -->
+    <section class="outro">
+      <div class="eyebrow"><span class="tick"></span>Zelf ervaren</div>
+      <h2 class="kin">
+        <span class="ln"><span>Genoeg verteld.</span></span>
+        <span class="ln"><span>Open het <em class="accent-word">dashboard</em>.</span></span>
+      </h2>
+      <p class="lead reveal d2">Bekijk dezelfde nacht als een live overzicht — de cijfers, de transacties en het moment waarop het model afwijkingen naar boven brengt.</p>
+      <button class="cta-big reveal d3" id="tryBtn">Probeer het uit <span class="arr">→</span></button>
+      <div class="cta-note reveal d3">Prototype · voorbeelddata, geen echte transacties</div>
+      <div class="sign reveal d4"><b>Sentinel</b> — AI-fraudedetectie · Isolation Forest · scikit-learn &nbsp;·&nbsp; Prototype, Adam Saber</div>
+    </section>
+
+  </main>
+
+  <!-- ================= DASHBOARD ================= -->
+  <div class="dash" id="dash">
+    <div class="dash-inner">
+      <div class="dash-head da">
+        <div>
+          <div class="eyebrow in"><span class="tick"></span>Live overzicht</div>
+          <h2>Eén nacht, in één oogopslag</h2>
+        </div>
+        <button class="cta ghost" id="backBtn">← Terug naar verhaal</button>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi da" style="--w:100%"><div class="l">Transacties geanalyseerd</div><div class="v mono" data-dt="200">0</div><div class="track"><i></i></div></div>
+        <div class="kpi da" style="--w:7%"><div class="l">Gemarkeerd · 7%</div><div class="v mono" data-dt="14">0</div><div class="track"><i></i></div></div>
+        <div class="kpi accent da" style="--w:64%"><div class="l">Fraude-alerts</div><div class="v mono" data-dt="9">0</div><div class="track"><i></i></div></div>
+        <div class="kpi da" style="--w:48%"><div class="l">Gemarkeerd bedrag</div><div class="v mono" data-dt="16480" data-prefix="€ " data-group="1">0</div><div class="track"><i></i></div></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel da">
+          <div class="ph"><h3>Transacties</h3><span class="sub">gesorteerd op risico</span></div>
+          <table class="tx">
+            <thead><tr><th>Begunstigde</th><th>Tijd</th><th class="r">Bedrag</th><th>Risico</th><th class="r">Status</th></tr></thead>
+            <tbody id="txBody"></tbody>
+          </table>
+        </div>
+        <div>
+          <div class="panel da" style="margin-bottom:18px;">
+            <div class="ph"><h3>Transacties per uur</h3><span class="sub">markeringen 's nachts</span></div>
+            <div class="hours" id="hours"></div>
+            <div class="hours-x"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
+          </div>
+          <div class="panel da">
+            <div class="ph"><h3>Verdeling</h3><span class="sub">200 transacties</span></div>
+            <div class="dist">
+              <span class="n" style="--w:93%"></span><span class="v" style="--w:2.5%"></span><span class="f" style="--w:4.5%"></span>
+            </div>
+            <div class="legend">
+              <span><i style="background:#4a4360"></i>Normaal 186</span>
+              <span><i style="background:var(--verdacht)"></i>Verdacht 5</span>
+              <span><i style="background:var(--accent)"></i>Fraude 9</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+
+  /* ---------- Reveal ---------- */
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.2 });
+  document.querySelectorAll(".reveal, .kin, .eyebrow, .fig, .card").forEach(function (el) { io.observe(el); });
+
+  /* ---------- Cijfers optellen (verhaal) ---------- */
+  function fmt(n, g) { return g ? n.toLocaleString("nl-NL") : String(n); }
+  function countUp(el, target, pre, g, dur) {
+    var start = null;
+    function step(ts) { if (start === null) start = ts; var t = Math.min(1, (ts - start) / (dur||1600)), e2 = 1 - Math.pow(1 - t, 3);
+      el.textContent = pre + fmt(Math.round(target * e2), g); if (t < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  var numIO = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (!e.isIntersecting) return; numIO.unobserve(e.target);
+      countUp(e.target, parseInt(e.target.dataset.target,10), e.target.dataset.prefix||"", e.target.dataset.group); });
+  }, { threshold: 0.6 });
+  document.querySelectorAll("[data-target]").forEach(function (el) { numIO.observe(el); });
+
+  /* ---------- Navbar scroll-staat + voortgang + parallax ---------- */
+  var nav = document.getElementById("nav"), progress = document.getElementById("progress");
+  var aurora = document.getElementById("aurora"), scope = document.getElementById("scope");
+  var mx = 0, my = 0, sy = 0, ticking = false;
+  function apply() {
+    progress.style.width = (sy / (document.body.scrollHeight - innerHeight) * 100) + "%";
+    nav.classList.toggle("scrolled", sy > 40);
+    aurora.style.transform = "translate3d(" + (mx * 18) + "px," + (sy * 0.06 + my * 14) + "px,0)";
+    if (scope) scope.style.transform = "rotateY(" + (mx * 7) + "deg) rotateX(" + (-my * 7) + "deg)";
+    ticking = false;
+  }
+  function req() { if (!ticking) { ticking = true; requestAnimationFrame(apply); } }
+  addEventListener("scroll", function () { sy = scrollY; req(); }, { passive: true });
+  addEventListener("mousemove", function (e) { mx = (e.clientX / innerWidth - 0.5) * 2; my = (e.clientY / innerHeight - 0.5) * 2; req(); }, { passive: true });
+
+  /* ---------- Hero radar: clean frame + echte scan-blips ---------- */
+  (function () {
+    var svg = document.getElementById("scopeSvg"), scan = document.getElementById("scan"); if (!svg) return;
+    var s = 998877; function rnd() { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }
+    var blips = [];
+    function addBlip(x, y, r, anom) {
+      var c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", r);
+      c.setAttribute("fill", anom ? "#b9a3f0" : "#8b80a6");
+      svg.appendChild(c);
+      var ang = Math.atan2(y - 200, x - 200) * 180 / Math.PI; if (ang < 0) ang += 360;
+      return { el: c, ang: ang, r: r, anom: anom, glow: anom ? 0.45 : 0 };
+    }
+    for (var i = 0; i < 30; i++) { var a = rnd()*Math.PI*2, rr = 42 + rnd()*136;
+      blips.push(addBlip(200 + Math.cos(a)*rr, 200 + Math.sin(a)*rr, 2.4 + rnd()*1.2, false)); }
+    var aax = 200 + Math.cos(-0.7)*150, aay = 200 + Math.sin(-0.7)*150;
+    addBlip(aax, aay, 5, true);
+    var ring = document.createElementNS(NS,"circle"); ring.setAttribute("cx",aax); ring.setAttribute("cy",aay);
+    ring.setAttribute("r",9); ring.setAttribute("class","sring"); svg.appendChild(ring);
+    var g = document.createElementNS(NS,"g"); g.setAttribute("class","slabel");
+    var ll = document.createElementNS(NS,"line"); ll.setAttribute("x1",aax+6); ll.setAttribute("y1",aay-6); ll.setAttribute("x2",aax+38); ll.setAttribute("y2",aay-24);
+    var tt = document.createElementNS(NS,"text"); tt.setAttribute("x",aax+42); tt.setAttribute("y",aay-20); tt.textContent="−0.81";
+    g.appendChild(ll); g.appendChild(tt); svg.appendChild(g);
+
+    var ang = 0, prev = 0, last = null;
+    function inArc(a, lo, hi) { return lo <= hi ? (a > lo && a <= hi) : (a > lo || a <= hi); }
+    function loop(now) {
+      if (last === null) last = now; var dt = Math.min(0.05,(now-last)/1000); last = now;
+      prev = ang; ang = (ang + dt*82) % 360;
+      scan.style.transform = "rotate(" + ang + "deg)";
+      for (var j = 0; j < blips.length; j++) { var b = blips[j];
+        if (inArc(b.ang, prev, ang)) b.glow = 1;
+        var floor = b.anom ? 0.5 : 0.32;
+        b.glow = Math.max(floor, b.glow - dt*1.6);
+        b.el.setAttribute("opacity", b.glow);
+        b.el.setAttribute("r", b.r * (1 + (b.glow - floor) * (b.anom ? 1.0 : 0.7)));
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  })();
+
+  /* ---------- Isolatie-sequentie ---------- */
+  (function () {
+    var svg = document.getElementById("isoSvg"), stage = document.getElementById("stage"), badge = document.getElementById("isoBadge");
+    if (!svg) return;
+    var s = 20240620; function rnd() { s = (s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; }
+    var regs = [ {x:420,y:0,w:140,h:380}, {x:420,y:0,w:140,h:160}, {x:420,y:44,w:140,h:116}, {x:420,y:44,w:102,h:116} ];
+    var regEls = regs.map(function (r) { var rc = document.createElementNS(NS,"rect");
+      rc.setAttribute("x",r.x); rc.setAttribute("y",r.y); rc.setAttribute("width",r.w); rc.setAttribute("height",r.h);
+      rc.setAttribute("class","region"); svg.appendChild(rc); return rc; });
+    var ANOM = { x: 476, y: 92 }, dots = [], made = 0;
+    while (made < 42) { var x = 54+rnd()*372, y = 60+rnd()*280; if (x>420 && y<160) continue; dots.push({x:x,y:y,anom:false}); made++; }
+    dots.push({ x: ANOM.x, y: ANOM.y, anom: true });
+    var dotEls = dots.map(function (d) { var c = document.createElementNS(NS,"circle");
+      c.setAttribute("cx",d.x); c.setAttribute("cy",d.y); c.setAttribute("r",d.anom?6.5:4.2);
+      c.setAttribute("class","dot "+(d.anom?"anom":"normal")); if(!d.anom) c.setAttribute("fill","#7b6f93");
+      svg.appendChild(c); return c; });
+    var lines = [
+      {x1:420,y1:0,x2:420,y2:380, dx:0,dy:380}, {x1:420,y1:160,x2:560,y2:160, dx:140,dy:0},
+      {x1:420,y1:44,x2:560,y2:44, dx:140,dy:0}, {x1:522,y1:0,x2:522,y2:160, dx:0,dy:160}
+    ];
+    var lineEls = lines.map(function (l) {
+      var ln = document.createElementNS(NS,"line"); ln.setAttribute("x1",l.x1); ln.setAttribute("y1",l.y1); ln.setAttribute("x2",l.x2); ln.setAttribute("y2",l.y2);
+      ln.setAttribute("class","split-l"); ln.style.setProperty("--len", Math.hypot(l.x2-l.x1,l.y2-l.y1)); svg.appendChild(ln);
+      var h = document.createElementNS(NS,"circle"); h.setAttribute("cx",l.x1); h.setAttribute("cy",l.y1); h.setAttribute("r",3.4); h.setAttribute("class","head"); svg.appendChild(h);
+      return { ln: ln, head: h, l: l };
+    });
+    var cell = document.createElementNS(NS,"rect"); cell.setAttribute("x",420); cell.setAttribute("y",44); cell.setAttribute("width",102); cell.setAttribute("height",116);
+    cell.setAttribute("rx",4); cell.setAttribute("class","cell"); svg.appendChild(cell);
+    var ring = document.createElementNS(NS,"circle"); ring.setAttribute("cx",ANOM.x); ring.setAttribute("cy",ANOM.y); ring.setAttribute("r",14); ring.setAttribute("class","ring"); svg.appendChild(ring);
+    function run() {
+      dotEls.forEach(function (c,i) { setTimeout(function(){ c.classList.add("show"); }, 180+i*22); });
+      var base = 180 + dotEls.length*22 + 380;
+      var capt = ["splitsing 1 — bedrag","splitsing 2 — uur","splitsing 3 — locatie","splitsing 4 — frequentie"];
+      lineEls.forEach(function (o,i) { setTimeout(function () {
+        o.ln.classList.add("draw"); regEls[i].classList.add("show"); badge.innerHTML = capt[i];
+        o.head.style.opacity = 1; o.head.style.transform = "translate("+o.l.dx+"px,"+o.l.dy+"px)";
+        setTimeout(function(){ o.head.style.opacity = 0; }, 680);
+      }, base + i*760); });
+      setTimeout(function () { cell.classList.add("show"); stage.classList.add("focus"); ring.classList.add("go");
+        badge.innerHTML = "<b>1 betaling</b> — apart gezet na 4 snedes"; }, base + lineEls.length*760 + 260);
+    }
+    var ran = false;
+    var sio = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !ran) { ran = true; run(); sio.disconnect(); } }); }, { threshold: 0.4 });
+    sio.observe(stage);
+  })();
+
+  /* ---------- Dashboard ---------- */
+  var TX = [
+    { m:"Onbekende begunstigde", sub:"— · 01:58", amt:"€ 1.880", risk:92, st:"fraude" },
+    { m:"Crypto-X Ltd", sub:"Lagos · 02:14", amt:"€ 1.700", risk:87, st:"fraude" },
+    { m:"WU Transfer", sub:"Kiev · 03:41", amt:"€ 1.520", risk:82, st:"fraude" },
+    { m:"Late overboeking", sub:"— · 23:50", amt:"€ 580", risk:51, st:"verdacht" },
+    { m:"Coolblue", sub:"Amsterdam · 13:12", amt:"€ 129", risk:22, st:"normaal" },
+    { m:"Shell", sub:"Den Haag · 18:45", amt:"€ 61", risk:14, st:"normaal" },
+    { m:"Bol.com", sub:"Utrecht · 11:20", amt:"€ 38", risk:11, st:"normaal" },
+    { m:"Albert Heijn", sub:"Rotterdam · 14:03", amt:"€ 42", risk:8, st:"normaal" }
+  ];
+  var stLabel = { fraude:"Fraude", verdacht:"Verdacht", normaal:"Normaal" };
+  (function buildTx() {
+    var b = document.getElementById("txBody"); if (!b) return;
+    TX.forEach(function (t) {
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><div class="m">'+t.m+'</div><div class="sub mono">'+t.sub+'</div></td>' +
+        '<td class="mono">'+t.sub.split("· ")[1]+'</td>' +
+        '<td class="r mono">'+t.amt+'</td>' +
+        '<td><span class="rb"><i style="--w:'+t.risk+'%"></i></span> <span class="mono" style="font-size:13px;color:var(--muted);margin-left:8px">'+t.risk+'</span></td>' +
+        '<td class="r"><span class="st '+t.st+'">'+stLabel[t.st]+'</span></td>';
+      b.appendChild(tr);
+    });
+  })();
+  // per-uur staafjes (24)
+  (function buildHours() {
+    var box = document.getElementById("hours"); if (!box) return;
+    var counts = [3,6,8,5,2,1,1,2,4,9,14,17,15,16,13,12,11,13,15,10,7,5,8,6];
+    var flagHours = {1:1,2:1,3:1,23:1};
+    var max = Math.max.apply(null, counts);
+    counts.forEach(function (c, h) {
+      var d = document.createElement("div"); d.className = "h" + (flagHours[h] ? " flag" : "");
+      d.style.height = (c / max * 100) + "%"; d.style.transitionDelay = (h * 0.018) + "s";
+      box.appendChild(d);
+    });
+  })();
+
+  var dash = document.getElementById("dash"), body = document.body;
+  function openDash() {
+    body.classList.add("dash-open"); window.scrollTo(0, 0); nav.classList.add("scrolled");
+    var das = dash.querySelectorAll(".da");
+    das.forEach(function (el, i) { setTimeout(function () { el.classList.add("in"); }, 60 + i * 80); });
+    setTimeout(function () { dash.classList.add("go"); }, 250);
+    dash.querySelectorAll(".kpi").forEach(function (k, i) {
+      setTimeout(function () { k.classList.add("show");
+        var v = k.querySelector("[data-dt]"); if (v) countUp(v, parseInt(v.dataset.dt,10), v.dataset.prefix||"", v.dataset.group, 1300);
+      }, 300 + i * 90);
+    });
+  }
+  function closeDash() {
+    body.classList.remove("dash-open");
+    dash.classList.remove("go");
+    dash.querySelectorAll(".da").forEach(function (el) { el.classList.remove("in"); });
+    dash.querySelectorAll(".kpi").forEach(function (k) { k.classList.remove("show");
+      var v = k.querySelector("[data-dt]"); if (v) v.textContent = (v.dataset.prefix||"") + "0"; });
+  }
+  document.getElementById("navTry").addEventListener("click", openDash);
+  document.getElementById("tryBtn").addEventListener("click", openDash);
+  document.getElementById("backBtn").addEventListener("click", closeDash);
+  document.getElementById("brand").addEventListener("click", function (e) { if (body.classList.contains("dash-open")) { e.preventDefault(); closeDash(); } });
+
+})();
+</script>
+</body>
+</html>
