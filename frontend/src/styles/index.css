@@ -1,0 +1,266 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+#root {
+  height: 100vh;
+}
+body {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border, #232a37);
+  border-radius: 8px;
+  border: 2px solid var(--bg, #0a0c12);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ----- motion tokens (Emil Kowalski curves, reused across the app) ----- */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* strong ease-out for enter/exit */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-like drawer */
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1); /* quick state toggles */
+  --focus-ring: var(--accent);
+}
+
+/* ----- keyframes (ported from the Sentinel prototype) ----- */
+@keyframes fd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fd-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fd-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes fd-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes fd-pop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes fd-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fd-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(400%);
+  }
+}
+@keyframes fd-shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
+@keyframes fd-orb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(26px, -34px) scale(1.12);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+@keyframes fd-slide {
+  from {
+    transform: translateX(34px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes fd-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ----- depth backdrop: the cinematic "looking into the field" layer ----- */
+.fd-depth {
+  background: var(--depth);
+}
+/* faint topographic contour texture, layered on top of the depth gradient */
+.fd-depth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-radial-gradient(
+    circle at 50% 36%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 0,
+    color-mix(in srgb, var(--accent) 6%, transparent) 1px,
+    transparent 1px,
+    transparent 56px
+  );
+  opacity: 0.5;
+  mask-image: radial-gradient(120% 100% at 50% 30%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 30%, #000 0%, transparent 75%);
+}
+
+/* ----- frosted glass panel ----- */
+.fd-glass {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(22px) saturate(1.15);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  border: 1px solid color-mix(in srgb, #fff 8%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 60px -28px rgba(0, 0, 0, 0.65);
+  border-radius: 16px;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .fd-glass {
+    background: var(--surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* ----- press feedback (any pressable element) ----- */
+.fd-press {
+  transition: transform 0.14s var(--ease-out);
+}
+.fd-press:active {
+  transform: scale(0.97);
+}
+
+/* ----- staggered entrance for groups (KPIs, rows) ----- */
+.fd-stagger > * {
+  animation: fd-rise 0.42s var(--ease-out) both;
+}
+.fd-stagger > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.fd-stagger > *:nth-child(2) {
+  animation-delay: 50ms;
+}
+.fd-stagger > *:nth-child(3) {
+  animation-delay: 100ms;
+}
+.fd-stagger > *:nth-child(4) {
+  animation-delay: 150ms;
+}
+.fd-stagger > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+
+/* ----- hover helpers (CSS so theme vars stay live) ----- */
+.fd-row {
+  transition: background-color 0.12s ease;
+}
+.fd-row:hover {
+  background: var(--surface2);
+}
+.fd-card-hover {
+  transition: border-color 0.18s var(--ease-out), transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fd-card-hover:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border)) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 28px 60px -30px rgba(0, 0, 0, 0.7);
+  }
+}
+.fd-btn {
+  transition: background-color 0.15s var(--ease-out), border-color 0.15s var(--ease-out), color 0.15s var(--ease-out), transform 0.14s var(--ease-out);
+}
+.fd-btn:active {
+  transform: scale(0.97);
+}
+.fd-link {
+  transition: opacity 0.15s ease;
+}
+.fd-link:hover {
+  opacity: 0.7;
+}
+.fd-indicator {
+  transition: opacity 0.18s var(--ease-snap);
+}
+.fd-seg-btn {
+  transition: background-color 0.15s var(--ease-snap), color 0.15s var(--ease-snap), transform 0.14s var(--ease-out);
+}
+.fd-seg-btn:active {
+  transform: scale(0.97);
+}
+.fd-theme-fade {
+  transition: background-color 0.24s var(--ease-out), color 0.24s var(--ease-out);
+}
+
+/* ----- focus ring (keyboard nav only, theme-aware) ----- */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+  transition: outline-color 0.15s var(--ease-snap);
+}
+
+/* ----- reduced-motion: gentler, not zero (keep opacity/colour, drop movement) ----- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* purely decorative, continuous motion is removed outright */
+  .fd-orb-anim,
+  .fd-scan-anim,
+  .fd-depth::before {
+    animation: none !important;
+  }
+}
