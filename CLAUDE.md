@@ -14,7 +14,9 @@ A full-stack fraud-detection demo. A Flask backend runs a scikit-learn
 CSV) and returns per-transaction anomaly scores. A React frontend — the
 **Sentinel** dashboard — visualises the results: KPIs, a 3D transaction cloud,
 a status donut, an hourly bar chart, a transaction table and a detail panel,
-plus a plain-language "how it works" explainer. Light/dark theme.
+plus a plain-language "how it works" explainer. Dark aubergine/lavender
+theme with a drifting aurora and framer-motion animations, matching the
+landing story.
 
 The model is **unsupervised**: it learns what "normal" looks like and flags
 outliers — it never sees labelled fraud examples.
@@ -52,7 +54,8 @@ frontend/                    React 19 + Vite (one app: landing story + dashboard
         ├── api.js           axios calls to /api/* (proxied to the backend)
         ├── adapt.js         maps the backend response -> UI shape + KPIs
         ├── constants.js     RISK thresholds + STATUS helpers (single source of truth)
-        ├── theme.js         light/dark palettes + CSS-var builder
+        ├── theme.js         aubergine/lavender palette + CSS-var builder
+        ├── anim.jsx         CountUp (count-up KPI numbers)
         ├── charts.js        ECharts option builders (3D scatter, donut, hourly bar)
         ├── styles/index.css reset, keyframes, hover helpers
         └── components/      Sidebar (logo -> "/"), Topbar, DataScreen, Dashboard,
@@ -120,5 +123,5 @@ CSV must contain at least `amount` and `hour` (or `time`); the other features
 
 ## Out of scope
 
-No auth, no database (everything in-memory per request), no dark-mode persistence
-beyond `localStorage`, no Docker, no tests.
+No auth, no database (everything in-memory per request), no theme switching
+(the app is dark-only), no Docker, no tests.

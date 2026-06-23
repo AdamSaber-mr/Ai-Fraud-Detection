@@ -59,7 +59,7 @@ export default function Sidebar({ screen, onNav }) {
         flexShrink: 0,
         position: 'relative',
         zIndex: 1,
-        background: 'color-mix(in srgb, var(--bg2) 78%, transparent)',
+        background: 'color-mix(in srgb, var(--bg2) 92%, transparent)',
         backdropFilter: 'blur(18px) saturate(1.1)',
         WebkitBackdropFilter: 'blur(18px) saturate(1.1)',
         borderRight: '1px solid color-mix(in srgb, var(--border) 80%, transparent)',

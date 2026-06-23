@@ -144,18 +144,72 @@ body {
     transparent 1px,
     transparent 56px
   );
-  opacity: 0.5;
+  opacity: 0.22;
   mask-image: radial-gradient(120% 100% at 50% 30%, #000 0%, transparent 75%);
   -webkit-mask-image: radial-gradient(120% 100% at 50% 30%, #000 0%, transparent 75%);
 }
 
+/* ----- drifting aurora: the landing story's lavender glow, behind the app ----- */
+.fd-aurora {
+  position: absolute;
+  inset: -20% -10%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(120px);
+  opacity: 0.28;
+  overflow: hidden;
+}
+.fd-aurora b {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.fd-aurora .a1 {
+  width: 46vw;
+  height: 46vw;
+  left: -6vw;
+  top: -12vh;
+  background: radial-gradient(circle, rgba(139, 114, 214, 0.42), transparent 66%);
+  animation: fd-drift1 34s ease-in-out infinite;
+}
+.fd-aurora .a2 {
+  width: 40vw;
+  height: 40vw;
+  right: -6vw;
+  top: 8vh;
+  background: radial-gradient(circle, rgba(185, 163, 240, 0.3), transparent 66%);
+  animation: fd-drift2 46s ease-in-out infinite;
+}
+.fd-aurora .a3 {
+  width: 38vw;
+  height: 38vw;
+  left: 30vw;
+  bottom: -18vh;
+  background: radial-gradient(circle, rgba(127, 184, 166, 0.22), transparent 66%);
+  animation: fd-drift3 40s ease-in-out infinite;
+}
+@keyframes fd-drift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6vw, 4vh) scale(1.12); }
+}
+@keyframes fd-drift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-5vw, 6vh) scale(1.08); }
+}
+@keyframes fd-drift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4vw, -5vh) scale(1.15); }
+}
+
 /* ----- frosted glass panel ----- */
 .fd-glass {
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
-  backdrop-filter: blur(22px) saturate(1.15);
-  -webkit-backdrop-filter: blur(22px) saturate(1.15);
-  border: 1px solid color-mix(in srgb, #fff 8%, transparent);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 60px -28px rgba(0, 0, 0, 0.65);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid color-mix(in srgb, var(--accent) 13%, var(--border));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 50px -30px rgba(0, 0, 0, 0.7);
   border-radius: 16px;
 }
 @media (prefers-reduced-transparency: reduce) {
@@ -257,6 +311,7 @@ body {
   /* purely decorative, continuous motion is removed outright */
   .fd-orb-anim,
   .fd-scan-anim,
+  .fd-aurora b,
   .fd-depth::before {
     animation: none !important;
   }

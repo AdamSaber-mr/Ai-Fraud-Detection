@@ -14,16 +14,10 @@ import EmptyState from './components/EmptyState'
 import LoadingOverlay from './components/LoadingOverlay'
 import Toast from './components/Toast'
 
-function initialTheme() {
-  try {
-    return localStorage.getItem('fd_theme') || 'donker'
-  } catch {
-    return 'donker'
-  }
-}
+// Dark-only: the dashboard wears the landing story's aubergine/lavender skin.
+const theme = 'donker'
 
 export default function App() {
-  const [theme, setTheme] = useState(initialTheme)
   const [screen, setScreen] = useState('data')
   const [layout, setLayout] = useState('overzicht')
   const [filter, setFilter] = useState('alle')
@@ -36,14 +30,6 @@ export default function App() {
 
   const stepTimer = useRef(null)
   const toastTimer = useRef(null)
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('fd_theme', theme)
-    } catch {
-      /* ignore */
-    }
-  }, [theme])
 
   useEffect(
     () => () => {
@@ -105,7 +91,6 @@ export default function App() {
     setScreen(s)
     setSelId(null)
   }
-  const toggleTheme = () => setTheme((t) => (t === 'licht' ? 'donker' : 'licht'))
 
   const hasData = !!data
   const selectedTx = hasData && selId != null ? data.transactions.find((t) => t.id === selId) : null
@@ -119,7 +104,7 @@ export default function App() {
       className="fd-theme-fade fd-depth"
       style={{
         ...cssVars(theme),
-        colorScheme: theme === 'licht' ? 'light' : 'dark',
+        colorScheme: 'dark',
         display: 'flex',
         height: '100vh',
         minHeight: 620,
@@ -130,10 +115,16 @@ export default function App() {
         position: 'relative',
       }}
     >
+      <div className="fd-aurora" aria-hidden>
+        <b className="a1" />
+        <b className="a2" />
+        <b className="a3" />
+      </div>
+
       <Sidebar screen={screen} onNav={onNav} />
 
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative', zIndex: 1 }}>
-        <Topbar theme={theme} onToggleTheme={toggleTheme} />
+        <Topbar />
 
         <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
           {error && (

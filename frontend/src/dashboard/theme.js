@@ -1,45 +1,29 @@
-// "Depth Field" palettes — dark is the cinematic signature, light is a clean
-// daylight variant. One cool system accent; the three status colours form the
-// continuous safe→warn→danger data spectrum used across charts and risk bars.
+// Aubergine-noir + lavender — one dark signature palette, matching the landing
+// story. Lavender is the system accent; the three status colours (teal → gold →
+// rose) form the safe→warn→danger data spectrum used across charts and risk bars
+// and stay inside the cool/warm purple family so nothing clashes with the story.
 export const PALETTES = {
   donker: {
-    bg: '#06070d',
-    bg2: '#0a0c14',
-    surface: '#11141d',
-    surface2: '#171b26',
-    border: '#232838',
-    text: '#eef1f7',
-    text2: '#9aa3b5',
-    text3: '#5a6478',
-    accent: '#5b8cff',
-    safe: '#2ee6a6',
-    warn: '#ffb84d',
-    danger: '#ff5a6e',
-    axis: '#2c3242',
-    split: '#161b27',
-  },
-  licht: {
-    bg: '#f4f6fb',
-    bg2: '#eef1f8',
-    surface: '#ffffff',
-    surface2: '#f3f6fc',
-    border: '#e2e7f0',
-    text: '#121622',
-    text2: '#566173',
-    text3: '#94a0b2',
-    accent: '#2f5fe0',
-    safe: '#0f9d76',
-    warn: '#cf8312',
-    danger: '#e23b4e',
-    axis: '#c7cfdb',
-    split: '#e9eef6',
+    bg: '#15111c',
+    bg2: '#1d1727',
+    surface: '#241d34',
+    surface2: '#2f2645',
+    border: '#3f3659',
+    text: '#f2eff8',
+    text2: '#b7aecb',
+    text3: '#897ea4',
+    accent: '#b9a3f0',
+    safe: '#7fb8a6',
+    warn: '#d6a85f',
+    danger: '#e0729a',
+    axis: '#352c4a',
+    split: '#241d33',
   },
 }
 
 // Build the CSS custom properties used across the inline styles.
 export function cssVars(theme) {
   const p = PALETTES[theme] || PALETTES.donker
-  const dark = theme !== 'licht'
   return {
     '--bg': p.bg,
     '--bg2': p.bg2,
@@ -50,14 +34,13 @@ export function cssVars(theme) {
     '--text2': p.text2,
     '--text3': p.text3,
     '--accent': p.accent,
+    '--accent-dp': '#8b72d6',
     '--safe': p.safe,
     '--warn': p.warn,
     '--danger': p.danger,
-    // Cinematic depth backdrop: a lit centre that falls off into a dark
-    // vignette, evoking looking into the 3D transaction field.
-    '--depth': dark
-      ? `radial-gradient(120% 90% at 50% -10%, ${hexA(p.accent, 0.12)} 0%, transparent 42%), radial-gradient(90% 80% at 88% 18%, ${hexA(p.safe, 0.06)} 0%, transparent 55%), radial-gradient(100% 100% at 50% 120%, ${hexA('#000000', 0.55)} 0%, transparent 60%), ${p.bg}`
-      : `radial-gradient(120% 90% at 50% -10%, ${hexA(p.accent, 0.08)} 0%, transparent 45%), radial-gradient(90% 80% at 88% 18%, ${hexA(p.safe, 0.05)} 0%, transparent 55%), ${p.bg}`,
+    // Cinematic depth backdrop: a lit lavender centre that falls off into a dark
+    // aubergine vignette, evoking looking into the 3D transaction field.
+    '--depth': `radial-gradient(120% 90% at 50% -10%, ${hexA(p.accent, 0.1)} 0%, transparent 46%), radial-gradient(90% 80% at 86% 16%, ${hexA(p.safe, 0.05)} 0%, transparent 55%), radial-gradient(100% 100% at 50% 125%, ${hexA('#000000', 0.3)} 0%, transparent 60%), ${p.bg}`,
   }
 }
 
