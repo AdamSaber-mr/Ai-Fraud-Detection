@@ -10,7 +10,8 @@
   --accent:    #b9a3f0;
   --accent-dp: #8b72d6;
   --accent-soft: rgba(185,163,240,0.14);
-  --verdacht:  #9a86c8;
+  --accent-2:  #8fb3aa;  /* koele, gedempte tweede accent (verdacht) */
+  --verdacht:  #8fb3aa;
   --nav-h:     66px;
 }
 
@@ -60,12 +61,42 @@ body {
   background: radial-gradient(120% 100% at 50% 0%, transparent 58%, rgba(8,6,12,0.55) 100%); }
 
 #story, .dash { position: relative; z-index: 1; }
-section { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
-  padding: 12vh 8vw; max-width: 1320px; margin: 0 auto; }
+section { position: relative; max-width: 1320px; margin: 0 auto;
+  padding: 124px 8vw 130px; border-top: 1px solid var(--line); }
+
+/* full-bleed achtergrond-"kamers" per sectie (dekt de aurora af, behalve hero) */
+.band { border-top: 1px solid rgba(255,255,255,0.04); }
+.band::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100vw; z-index: -1; }
+.band-light::before { background: #1e1830; }
+.band-dark::before  { background: #0d0b13; }
+.band-mid::before   { background: #181321; }
+.band-cta::before   { background:
+  radial-gradient(80% 130% at 50% 28%, rgba(139,114,214,0.18), transparent 60%), #1a1428; }
 
 .eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 12.5px; letter-spacing: 0.34em;
   text-transform: uppercase; color: var(--muted); margin-bottom: 30px; }
 .eyebrow .tick { width: 26px; height: 1px; background: var(--accent); display: inline-block; }
+
+/* sectiekop met hoofdstuknummer + scheidingslijn */
+.sec-head { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+.sec-no { font-size: 13px; color: var(--accent); letter-spacing: 0.04em; }
+.sec-label { font-size: 12.5px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+/* uitlijnings-varianten per sectie (afwisseling in de opmaak) */
+.head-center .sec-head { justify-content: center; }
+.head-center > .kin { text-align: center; max-width: none; }
+
+.center { text-align: center; }
+.center .sec-head { justify-content: center; }
+.center .kin { max-width: none; text-align: center; }
+.center .lead, .center p.body { margin-left: auto; margin-right: auto; }
+
+.right { text-align: right; }
+.right .sec-head { justify-content: flex-end; }
+.right .kin { max-width: none; text-align: right; }
+.right .lead, .right p.body { margin-left: auto; }
+.stage .badge { text-align: left; }
 
 /* ===== Kinetische typografie ===== */
 .kin { font-weight: 600; letter-spacing: -0.03em; }
@@ -85,7 +116,9 @@ p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
 .gtrack i.grad { background: linear-gradient(90deg, var(--accent-dp), var(--accent)); }
 
 /* ===== Hero ===== */
-.hero { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 5vw; align-items: center; padding-top: var(--nav-h); }
+.hero { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 5vw; align-items: center;
+  min-height: 100vh; border-top: none; padding: calc(var(--nav-h) + 4vh) 8vw 8vh; }
+.outro { padding-bottom: 140px; }
 .hero-copy { position: relative; z-index: 2; }
 .scrollhint { margin-top: 56px; display: flex; align-items: center; gap: 16px; color: var(--faint);
   font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
@@ -116,15 +149,23 @@ p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
 .slabel line { stroke: var(--accent); stroke-width: 1; opacity: 0.6; }
 .pring { fill: none; stroke: var(--accent); stroke-width: 1.4; }
 
-/* ===== Cijfers ===== */
-.figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; border-top: 1px solid var(--line); }
-.fig { padding: 36px 26px 30px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); transition: background .4s ease; }
-.fig:first-child { padding-left: 0; } .fig:last-child { border-right: none; }
-.fig:hover { background: rgba(185,163,240,0.04); }
-.fig .num { font-size: clamp(40px, 5vw, 66px); font-weight: 500; letter-spacing: -0.04em; line-height: 1; }
-.fig.alert .num { color: var(--accent); }
-.fig .cap { margin-top: 14px; font-size: 13.5px; color: var(--muted); }
-.fig .gtrack { height: 2px; }
+/* ===== Cijfers + dot-matrix ===== */
+.cijfers-grid { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 5vw; align-items: center; margin-top: 40px; }
+.stats { display: flex; flex-direction: column; }
+.stat { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.stat:first-child { padding-top: 0; } .stat:last-child { border-bottom: none; }
+.stat .snum { font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+.stat.accent .snum { color: var(--accent); }
+.stat .slabel { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+
+.matrix-wrap { max-width: 440px; margin-left: auto; }
+.matrix { display: grid; grid-template-columns: repeat(20, 1fr); gap: clamp(3px, 0.6vw, 7px); }
+.cell { aspect-ratio: 1; border-radius: 50%; background: #3a3450; }
+.cell.v { background: var(--verdacht); }
+.cell.f { background: var(--accent); box-shadow: 0 0 9px rgba(185,163,240,0.6); animation: cellpulse 2.8s ease-in-out infinite; }
+@keyframes cellpulse { 0%,100% { opacity: 0.72; } 50% { opacity: 1; } }
+.matrix-cap { margin-top: 24px; font-size: 14.5px; color: var(--muted); max-width: 60ch; }
+.matrix-cap b { color: var(--text); }
 
 /* ===== Isolatie ===== */
 .iso-wrap { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 6vw; align-items: center; margin-top: 12px; }
@@ -237,9 +278,12 @@ p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
   .hero { grid-template-columns: 1fr; gap: 8vh; }
   .hero-visual { order: -1; }
   .scope { width: min(74vw, 360px); }
-  .figures { grid-template-columns: 1fr 1fr; }
-  .fig:first-child { padding-left: 26px; }
+  .cijfers-grid { grid-template-columns: 1fr; gap: 44px; }
   .iso-wrap { grid-template-columns: 1fr; gap: 40px; }
+  .right { text-align: left; }
+  .right .sec-head { justify-content: flex-start; }
+  .right .kin { text-align: left; }
+  .right .lead, .right p.body { margin-left: 0; }
   .card { grid-template-columns: 1fr; gap: 10px; }
   .card .score { text-align: left; }
   .kpis { grid-template-columns: 1fr 1fr; }

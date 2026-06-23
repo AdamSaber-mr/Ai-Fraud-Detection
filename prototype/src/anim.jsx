@@ -61,6 +61,20 @@ export function Eyebrow({ children }) {
   )
 }
 
+/* Sectiekop met hoofdstuknummer + label + scheidingslijn die uitschuift. */
+export function SectionHead({ no, children }) {
+  return (
+    <motion.div
+      className="sec-head"
+      initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.6 }}
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.09 } } }}
+    >
+      <motion.span className="sec-no mono" variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>{no}</motion.span>
+      <motion.span className="sec-label" variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>{children}</motion.span>
+    </motion.div>
+  )
+}
+
 /* Cijfer dat optelt zodra het in beeld komt. */
 export function CountUp({ to, prefix = '', group = false, dur = 1.6 }) {
   const ref = useRef(null)
