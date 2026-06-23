@@ -33,19 +33,36 @@ backend/                     Flask API (Python 3.10+)
 ├── requirements.txt         pinned dependencies
 └── uploads/                 temp dir for uploaded CSVs (auto-created, gitignored)
 
-frontend/                    React 19 + Vite
+frontend/                    React 19 + Vite (one app: landing story + dashboard)
 └── src/
-    ├── main.jsx             entry
-    ├── App.jsx              state machine: screen/layout/filter/theme/loading/data
-    ├── api.js               axios calls to /api/* (proxied to the backend)
-    ├── adapt.js             maps the backend response -> UI shape + KPIs
-    ├── constants.js         RISK thresholds + STATUS helpers (single source of truth)
-    ├── theme.js             light/dark palettes + CSS-var builder
-    ├── charts.js            ECharts option builders (3D scatter, donut, hourly bar)
-    ├── styles/index.css     reset, keyframes, hover helpers
-    └── components/          Sidebar, Topbar, DataScreen, Dashboard, TransactionsScreen,
-                             HowItWorks, DetailPanel, EChart, EmptyState, LoadingOverlay, Toast
+    ├── main.jsx             entry — mounts <BrowserRouter>
+    ├── App.jsx              router: "/" -> Landing, "/dashboard" -> DashboardApp (lazy)
+    │
+    ├── landing/             scrollytelling intro (framer-motion), was the prototype
+    │   ├── Landing.jsx      composes the story sections; "Probeer het uit" -> /dashboard
+    │   ├── anim.jsx         Reveal/Kinetic/CountUp/GrowBar/SectionHead helpers
+    │   ├── data.js          static demo figures for the story
+    │   ├── styles.css       landing-only CSS, scoped under .landing
+    │   ├── hooks/useMouse.js   parallax pointer hook
+    │   └── components/      AuroraBg, Navbar, Hero, Figures, Isolation, Signals,
+    │                        CallToAction, Radar
+    │
+    └── dashboard/           the live dashboard (ECharts + real backend)
+        ├── DashboardApp.jsx state machine: screen/layout/filter/theme/loading/data
+        ├── api.js           axios calls to /api/* (proxied to the backend)
+        ├── adapt.js         maps the backend response -> UI shape + KPIs
+        ├── constants.js     RISK thresholds + STATUS helpers (single source of truth)
+        ├── theme.js         light/dark palettes + CSS-var builder
+        ├── charts.js        ECharts option builders (3D scatter, donut, hourly bar)
+        ├── styles/index.css reset, keyframes, hover helpers
+        └── components/      Sidebar (logo -> "/"), Topbar, DataScreen, Dashboard,
+                             TransactionsScreen, HowItWorks, DetailPanel, EChart,
+                             EmptyState, LoadingOverlay, Toast
 ```
+
+The landing page and dashboard are one Vite app behind `react-router`. The
+dashboard is code-split (`React.lazy`) so the landing stays light and only pulls
+in ECharts on `/dashboard`.
 
 ---
 
