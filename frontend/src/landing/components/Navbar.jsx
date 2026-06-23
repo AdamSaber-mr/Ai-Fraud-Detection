@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export default function Navbar({ onTry, onBrand, dash }) {
+export default function Navbar({ onTry, onBrand }) {
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -10,7 +10,7 @@ export default function Navbar({ onTry, onBrand, dash }) {
   }, [])
 
   return (
-    <header className={'nav' + (scrolled || dash ? ' scrolled' : '')}>
+    <header className={'nav' + (scrolled ? ' scrolled' : '')}>
       <a
         className="brand"
         href="#top"
@@ -24,19 +24,15 @@ export default function Navbar({ onTry, onBrand, dash }) {
         Sentinel
       </a>
 
-      {!dash && (
-        <nav className="links">
-          <a href="#cijfers">Cijfers</a>
-          <a href="#model">Hoe het werkt</a>
-          <a href="#signalen">Signalen</a>
-        </nav>
-      )}
+      <nav className="links">
+        <a href="#cijfers">Cijfers</a>
+        <a href="#model">Hoe het werkt</a>
+        <a href="#signalen">Signalen</a>
+      </nav>
 
       <span className="spacer" />
 
-      {dash
-        ? <button className="cta ghost" onClick={onBrand}>← Terug naar verhaal</button>
-        : <button className="cta" onClick={onTry}>Probeer het uit</button>}
+      <button className="cta" onClick={onTry}>Probeer het uit</button>
     </header>
   )
 }

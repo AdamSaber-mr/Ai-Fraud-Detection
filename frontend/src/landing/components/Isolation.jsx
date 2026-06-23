@@ -59,7 +59,7 @@ function geomFor(p) {
 }
 
 export default function Isolation() {
-  const bgDots = useMemo(buildBgDots, [])
+  const bgDots = useMemo(() => buildBgDots(), [])
   const stageRef = useRef(null)
   const inView = useInView(stageRef, { once: false, amount: 0.4 })
   const [step, setStep] = useState(0)   // 0 = punten, 1..4 = snedes, 5 = eindfocus

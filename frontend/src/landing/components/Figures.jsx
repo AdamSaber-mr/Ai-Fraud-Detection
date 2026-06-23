@@ -25,7 +25,7 @@ function Stat({ to, label, accent, prefix, group }) {
 }
 
 export default function Figures() {
-  const cells = useMemo(buildCells, [])
+  const cells = useMemo(() => buildCells(), [])
 
   return (
     <section id="cijfers" className="head-center band band-light">

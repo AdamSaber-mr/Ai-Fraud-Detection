@@ -5,6 +5,23 @@ const SCORES = ['−0.81', '−0.74', '−0.69', '−0.77', '−0.66', '−0.72'
 const NORMAL = '#8b80a6'
 const FLAG = '#b9a3f0'
 
+// 30 willekeurige (maar deterministische) bolletjes binnen de radarcirkel.
+// Puur statische geometrie — wordt gerenderd en nooit gemuteerd.
+function buildBlips() {
+  let s = 998877
+  const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff }
+  const angleOf = (x, y) => { let a = Math.atan2(y - 200, x - 200) * 180 / Math.PI; return a < 0 ? a + 360 : a }
+  const list = []
+  for (let i = 0; i < 30; i++) {
+    const a = rnd() * Math.PI * 2
+    const r = 52 + rnd() * 128
+    const x = 200 + Math.cos(a) * r
+    const y = 200 + Math.sin(a) * r
+    list.push({ x, y, r: 2.4 + rnd() * 1.2, ang: angleOf(x, y) })
+  }
+  return list
+}
+
 // Cleane radar met echte scan: de beam draait rond, elke stip licht op als de
 // straal er overheen veegt, en steeds wordt een ander bolletje "gevonden" en
 // gemarkeerd als verdacht — alsof het systeem transactie na transactie scant.
@@ -18,28 +35,21 @@ export default function Radar() {
   const keyN = useRef(1)
   const [flag, setFlag] = useState(null) // { x, y, score, key }
 
-  const blips = useMemo(() => {
-    let s = 998877
-    const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff }
-    const angleOf = (x, y) => { let a = Math.atan2(y - 200, x - 200) * 180 / Math.PI; return a < 0 ? a + 360 : a }
-    const list = []
-    for (let i = 0; i < 30; i++) {
-      const a = rnd() * Math.PI * 2
-      const r = 52 + rnd() * 128
-      const x = 200 + Math.cos(a) * r
-      const y = 200 + Math.sin(a) * r
-      list.push({ x, y, r: 2.4 + rnd() * 1.2, ang: angleOf(x, y), glow: 0, flagged: false })
-    }
-    return list
-  }, [])
+  // Statische geometrie: veilig om te renderen.
+  const blips = useMemo(() => buildBlips(), [])
+  // Veranderlijke animatiestatus per bolletje (glow/flagged) leeft los in een
+  // ref — die wordt elke frame gemuteerd en via de DOM toegepast, niet gerenderd.
+  const fxRef = useRef(null)
 
   // start: markeer meteen het buitenste bolletje zodat er iets staat bij het laden
   useEffect(() => {
+    const fx = blips.map(() => ({ glow: 0, flagged: false }))
+    fxRef.current = fx
     let outer = 0
     for (let i = 1; i < blips.length; i++) {
       if (Math.hypot(blips[i].x - 200, blips[i].y - 200) > Math.hypot(blips[outer].x - 200, blips[outer].y - 200)) outer = i
     }
-    blips[outer].flagged = true
+    fx[outer].flagged = true
     flaggedRef.current = outer
     setFlag({ x: blips[outer].x, y: blips[outer].y, score: SCORES[scoreN.current++ % SCORES.length], key: keyN.current++ })
   }, [blips])
@@ -58,6 +68,8 @@ export default function Radar() {
   const inArc = (a, lo, hi) => (lo <= hi ? a > lo && a <= hi : a > lo || a <= hi)
 
   useAnimationFrame((t) => {
+    const fx = fxRef.current
+    if (!fx) return
     const c = clock.current
     if (!c.last) c.last = t
     const dt = Math.min(0.05, (t - c.last) / 1000)
@@ -69,9 +81,9 @@ export default function Radar() {
     // promoot het wachtende doelwit zodra de beam er overheen veegt
     const p = pendingRef.current
     if (p != null && inArc(blips[p].ang, prev, c.ang)) {
-      if (flaggedRef.current != null) blips[flaggedRef.current].flagged = false
-      blips[p].flagged = true
-      blips[p].glow = 1
+      if (flaggedRef.current != null) fx[flaggedRef.current].flagged = false
+      fx[p].flagged = true
+      fx[p].glow = 1
       flaggedRef.current = p
       pendingRef.current = null
       setFlag({ x: blips[p].x, y: blips[p].y, score: SCORES[scoreN.current++ % SCORES.length], key: keyN.current++ })
@@ -79,14 +91,15 @@ export default function Radar() {
 
     for (let i = 0; i < blips.length; i++) {
       const b = blips[i]
+      const s = fx[i]
       const el = dotRefs.current[i]
       if (!el) continue
-      if (inArc(b.ang, prev, c.ang)) b.glow = 1
-      const floor = b.flagged ? 0.55 : 0.3
-      b.glow = Math.max(floor, b.glow - dt * 1.6)
-      el.setAttribute('opacity', b.glow)
-      el.setAttribute('r', (b.flagged ? b.r * 1.6 : b.r) * (1 + (b.glow - floor) * 0.7))
-      el.setAttribute('fill', b.flagged ? FLAG : NORMAL)
+      if (inArc(b.ang, prev, c.ang)) s.glow = 1
+      const floor = s.flagged ? 0.55 : 0.3
+      s.glow = Math.max(floor, s.glow - dt * 1.6)
+      el.setAttribute('opacity', s.glow)
+      el.setAttribute('r', (s.flagged ? b.r * 1.6 : b.r) * (1 + (s.glow - floor) * 0.7))
+      el.setAttribute('fill', s.flagged ? FLAG : NORMAL)
     }
   })
 
