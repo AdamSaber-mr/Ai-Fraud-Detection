@@ -6,9 +6,6 @@ body {
   margin: 0;
   padding: 0;
 }
-#root {
-  height: 100vh;
-}
 body {
   font-family: 'IBM Plex Sans', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+
 const NAV = [
   {
     key: 'data',
@@ -49,6 +51,7 @@ const NAV = [
 ]
 
 export default function Sidebar({ screen, onNav }) {
+  const navigate = useNavigate()
   return (
     <aside
       style={{
@@ -65,7 +68,23 @@ export default function Sidebar({ screen, onNav }) {
         padding: '20px 14px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '4px 8px 22px' }}>
+      <button
+        onClick={() => navigate('/')}
+        className="fd-press"
+        title="Terug naar het verhaal"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 11,
+          padding: '4px 8px 22px',
+          background: 'none',
+          border: 'none',
+          font: 'inherit',
+          color: 'inherit',
+          cursor: 'pointer',
+          textAlign: 'left',
+        }}
+      >
         <div
           style={{
             width: 32,
@@ -84,7 +103,7 @@ export default function Sidebar({ screen, onNav }) {
           <span style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 16, letterSpacing: '-.01em' }}>Sentinel</span>
           <span style={{ fontSize: 11, color: 'var(--text3)', fontFamily: "'IBM Plex Mono'", letterSpacing: '.02em' }}>AI fraudedetectie</span>
         </div>
-      </div>
+      </button>
 
       <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text3)', letterSpacing: '.12em', textTransform: 'uppercase', padding: '0 10px 10px' }}>
         Werkruimte
