@@ -1,10 +1,10 @@
-import { Eyebrow, Kinetic, Reveal, GrowBar } from '../anim'
+import { SectionHead, Kinetic, Reveal, GrowBar } from '../anim'
 import { SIGNALS } from '../data'
 
 export default function Signals() {
   return (
-    <section id="signalen">
-      <Eyebrow>De drie die opvielen</Eyebrow>
+    <section id="signalen" className="band band-mid">
+      <SectionHead no="03">De drie die opvielen</SectionHead>
       <Kinetic
         as="h2"
         className="kin"

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Eyebrow, Kinetic, Reveal } from '../anim'
+import { SectionHead, Kinetic, Reveal } from '../anim'
 
 // Kandidaten die het model om de beurt isoleert — verspreid over het veld,
 // elk in een rustige hoek zodat hun cel schoon kan worden uitgesneden.
@@ -96,8 +96,8 @@ export default function Isolation() {
   const dim = (isTarget) => (focus ? (isTarget ? 1 : 0.12) : (isTarget ? 1 : 0.85))
 
   return (
-    <section id="model">
-      <Eyebrow>Hoe het model denkt</Eyebrow>
+    <section id="model" className="band band-dark">
+      <SectionHead no="02">Hoe het model denkt</SectionHead>
       <div className="iso-wrap">
         <div>
           <Kinetic

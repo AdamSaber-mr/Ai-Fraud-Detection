@@ -1,9 +1,9 @@
-import { Eyebrow, Kinetic, Reveal } from '../anim'
+import { SectionHead, Kinetic, Reveal } from '../anim'
 
 export default function CallToAction({ onTry }) {
   return (
-    <section className="outro">
-      <Eyebrow>Zelf ervaren</Eyebrow>
+    <section className="outro center band band-cta">
+      <SectionHead no="04">Zelf ervaren</SectionHead>
       <Kinetic
         as="h2"
         className="kin"
