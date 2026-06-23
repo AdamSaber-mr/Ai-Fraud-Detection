@@ -23,7 +23,7 @@ export default function TransactionsScreen({ transactions, filter, onFilter, onR
           borderRadius: 999,
           border: 'none',
           background: on ? 'var(--accent)' : 'transparent',
-          color: on ? '#fff' : 'var(--text2)',
+          color: on ? '#1a1326' : 'var(--text2)',
           cursor: 'pointer',
         }}
       >
@@ -127,7 +127,7 @@ export default function TransactionsScreen({ transactions, filter, onFilter, onR
                   background: 'linear-gradient(90deg, color-mix(in srgb,var(--safe) 28%,transparent), color-mix(in srgb,var(--warn) 28%,transparent), color-mix(in srgb,var(--danger) 28%,transparent))',
                 }}
               >
-                <div style={{ height: '100%', borderRadius: 999, width: t.risk + '%', background: t.barColor }} />
+                <div style={{ height: '100%', borderRadius: 999, width: t.risk + '%', background: t.barColor, transformOrigin: 'left', animation: 'fd-grow .8s var(--ease-out) both' }} />
               </div>
               <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12.5, fontWeight: 600, width: 26, textAlign: 'right' }}>{t.risk}</span>
             </div>

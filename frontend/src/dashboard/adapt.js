@@ -136,6 +136,7 @@ export function adaptResponse(resp) {
       fraudAlerts,
       flagged,
       pct: total ? Math.round(flagged / total * 100) : 0,
+      flaggedAmount: Math.round(flaggedAmount),
       flaggedAmountFmt: eur(flaggedAmount),
     },
     bands: { normaal: normalBand, verdacht: suspicious, fraude: fraudAlerts },

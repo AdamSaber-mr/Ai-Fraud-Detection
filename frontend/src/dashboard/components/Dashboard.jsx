@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import EChart from './EChart'
 import { scatterOption, donutOption, barOption } from '../charts'
+import { CountUp } from '../anim'
 
 const panel = { padding: '18px 20px' }
 const sgTitle = { fontFamily: "'Space Grotesk'", fontSize: 15, fontWeight: 600 }
@@ -44,7 +45,7 @@ function RiskBar({ risk, color }) {
           background: 'linear-gradient(90deg, color-mix(in srgb,var(--safe) 28%,transparent), color-mix(in srgb,var(--warn) 28%,transparent), color-mix(in srgb,var(--danger) 28%,transparent))',
         }}
       >
-        <div style={{ height: '100%', borderRadius: 999, width: risk + '%', background: color }} />
+        <div style={{ height: '100%', borderRadius: 999, width: risk + '%', background: color, transformOrigin: 'left', animation: 'fd-grow .9s var(--ease-out) both' }} />
       </div>
       <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12, fontWeight: 600, width: 24, textAlign: 'right' }}>{risk}</span>
     </div>
@@ -144,7 +145,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
           borderRadius: 999,
           border: 'none',
           background: on ? 'var(--accent)' : 'transparent',
-          color: on ? '#fff' : 'var(--text2)',
+          color: on ? '#1a1326' : 'var(--text2)',
           cursor: 'pointer',
         }}
       >
@@ -177,7 +178,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
           <div style={{ position: 'relative', marginBottom: 8 }}>
             <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 2, maxWidth: '60%' }}>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 17, fontWeight: 600 }}>Transactieruimte</div>
-              <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>Elke stip is één transactie — uitschieters drijven naar de randen en kleuren rood.</div>
+              <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>Elke stip is één transactie — uitschieters drijven naar de randen en lichten op.</div>
             </div>
             <span style={{ ...rotatePill, position: 'absolute', top: 6, right: 6, zIndex: 2 }}>auto-roteert</span>
             <EChart option={scatter} style={{ height: 420 }} />
@@ -185,10 +186,10 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
 
           {/* KPI readouts float over the lower edge of the cloud */}
           <div className="fd-stagger" style={{ position: 'relative', zIndex: 3, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginTop: -36, marginBottom: 18 }}>
-            <Kpi label="Transacties" value={kpi.total.toLocaleString('nl-NL')} dot="var(--accent)" sub="volledig geanalyseerd" />
-            <Kpi label="Verdacht" value={kpi.suspicious.toLocaleString('nl-NL')} dot="var(--warn)" valueColor="var(--warn)" sub={`${kpi.pct}% van het totaal`} />
-            <Kpi label="Fraude-alerts" value={kpi.fraudAlerts.toLocaleString('nl-NL')} dot="var(--danger)" valueColor="var(--danger)" sub="hoog risico · directe actie" />
-            <Kpi label="Bedrag gemarkeerd" value={kpi.flaggedAmountFmt} dot="var(--text3)" sub="in verdachte transacties" />
+            <Kpi label="Transacties" value={<CountUp to={kpi.total} group />} dot="var(--accent)" sub="volledig geanalyseerd" />
+            <Kpi label="Verdacht" value={<CountUp to={kpi.suspicious} group />} dot="var(--warn)" valueColor="var(--warn)" sub={`${kpi.pct}% van het totaal`} />
+            <Kpi label="Fraude-alerts" value={<CountUp to={kpi.fraudAlerts} group />} dot="var(--danger)" valueColor="var(--danger)" sub="hoog risico · directe actie" />
+            <Kpi label="Bedrag gemarkeerd" value={<CountUp to={kpi.flaggedAmount} prefix="€ " group />} dot="var(--text3)" sub="in verdachte transacties" />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -231,7 +232,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
             <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 2, maxWidth: '62%' }}>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 16, fontWeight: 600 }}>Transactieruimte (3D)</div>
               <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>
-                Normale transacties klonteren samen in het midden — fraude drijft als rode uitschieter naar de randen.
+                Normale transacties klonteren samen in het midden — fraude drijft als heldere uitschieter naar de randen.
               </div>
             </div>
             <span style={{ ...rotatePill, position: 'absolute', top: 6, right: 6, zIndex: 2 }}>auto-roteert</span>
@@ -258,10 +259,10 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
       {layout === 'analyse' && (
         <>
           <div className="fd-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 16 }}>
-            <Kpi label="Transacties" value={kpi.total.toLocaleString('nl-NL')} dot="var(--accent)" sub="volledig geanalyseerd" />
-            <Kpi label="Verdacht" value={kpi.suspicious.toLocaleString('nl-NL')} dot="var(--warn)" valueColor="var(--warn)" sub={`${kpi.pct}% van het totaal`} />
-            <Kpi label="Fraude-alerts" value={kpi.fraudAlerts.toLocaleString('nl-NL')} dot="var(--danger)" valueColor="var(--danger)" sub="hoog risico · directe actie" />
-            <Kpi label="Bedrag gemarkeerd" value={kpi.flaggedAmountFmt} dot="var(--text3)" sub="in verdachte transacties" />
+            <Kpi label="Transacties" value={<CountUp to={kpi.total} group />} dot="var(--accent)" sub="volledig geanalyseerd" />
+            <Kpi label="Verdacht" value={<CountUp to={kpi.suspicious} group />} dot="var(--warn)" valueColor="var(--warn)" sub={`${kpi.pct}% van het totaal`} />
+            <Kpi label="Fraude-alerts" value={<CountUp to={kpi.fraudAlerts} group />} dot="var(--danger)" valueColor="var(--danger)" sub="hoog risico · directe actie" />
+            <Kpi label="Bedrag gemarkeerd" value={<CountUp to={kpi.flaggedAmount} prefix="€ " group />} dot="var(--text3)" sub="in verdachte transacties" />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16, marginBottom: 16 }}>
             <div className="fd-glass" style={panel}>
