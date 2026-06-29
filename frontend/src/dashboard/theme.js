@@ -1,23 +1,23 @@
-// Aubergine-noir + lavender — one dark signature palette, matching the landing
-// story. Lavender is the system accent; the three status colours (teal → gold →
-// rose) form the safe→warn→danger data spectrum used across charts and risk bars
-// and stay inside the cool/warm purple family so nothing clashes with the story.
+// Cyber / SOC skin — a near-black operations console lit by neon. Cyan is the
+// system accent; the three status colours (neon green → amber → hot pink-red)
+// form the safe→warn→danger spectrum used across charts, risk bars and chips.
+// The dashboard runs dark-only; the landing story keeps its own aubergine skin.
 export const PALETTES = {
   donker: {
-    bg: '#15111c',
-    bg2: '#1d1727',
-    surface: '#241d34',
-    surface2: '#2f2645',
-    border: '#3f3659',
-    text: '#f2eff8',
-    text2: '#b7aecb',
-    text3: '#897ea4',
-    accent: '#b9a3f0',
-    safe: '#7fb8a6',
-    warn: '#d6a85f',
-    danger: '#e0729a',
-    axis: '#352c4a',
-    split: '#241d33',
+    bg: '#05080d',
+    bg2: '#080d15',
+    surface: '#0c131d',
+    surface2: '#121b28',
+    border: '#1d2c3d',
+    text: '#e7f6f4',
+    text2: '#8fa8bb',
+    text3: '#5d7488',
+    accent: '#2af0e0',
+    safe: '#37f5a6',
+    warn: '#ffc24d',
+    danger: '#ff4d72',
+    axis: '#18293a',
+    split: '#101d29',
   },
 }
 
@@ -34,13 +34,13 @@ export function cssVars(theme) {
     '--text2': p.text2,
     '--text3': p.text3,
     '--accent': p.accent,
-    '--accent-dp': '#8b72d6',
+    '--accent-dp': '#13b6ab',
     '--safe': p.safe,
     '--warn': p.warn,
     '--danger': p.danger,
-    // Cinematic depth backdrop: a lit lavender centre that falls off into a dark
-    // aubergine vignette, evoking looking into the 3D transaction field.
-    '--depth': `radial-gradient(120% 90% at 50% -10%, ${hexA(p.accent, 0.1)} 0%, transparent 46%), radial-gradient(90% 80% at 86% 16%, ${hexA(p.safe, 0.05)} 0%, transparent 55%), radial-gradient(100% 100% at 50% 125%, ${hexA('#000000', 0.3)} 0%, transparent 60%), ${p.bg}`,
+    // Console backdrop: a cool cyan glow bleeding down from the top, falling off
+    // into a black floor vignette — the room the operations grid sits in.
+    '--depth': `radial-gradient(120% 80% at 50% -8%, ${hexA(p.accent, 0.1)} 0%, transparent 48%), radial-gradient(80% 70% at 88% 12%, ${hexA(p.safe, 0.05)} 0%, transparent 55%), radial-gradient(100% 100% at 50% 120%, ${hexA('#000000', 0.55)} 0%, transparent 62%), ${p.bg}`,
   }
 }
 
