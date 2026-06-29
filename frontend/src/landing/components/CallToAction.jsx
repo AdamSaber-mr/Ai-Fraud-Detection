@@ -17,13 +17,6 @@ export default function CallToAction({ onTry }) {
           Probeer het uit <span className="arr">→</span>
         </button>
       </Reveal>
-      <Reveal as="div" className="cta-note" delay={0.32}>
-        Prototype · voorbeelddata, geen echte transacties
-      </Reveal>
-      <Reveal as="div" className="sign" delay={0.42}>
-        <b>Sentinel</b> · AI-fraudedetectie · Isolation Forest · scikit-learn
-        &nbsp;·&nbsp; Prototype, Adam Saber
-      </Reveal>
     </section>
   )
 }
