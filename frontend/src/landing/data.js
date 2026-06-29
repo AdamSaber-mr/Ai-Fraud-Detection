@@ -21,7 +21,7 @@ export const FLAG_HOURS = [1, 2, 3, 23]
 export const SIGNALS = [
   {
     rank: '01', merchant: 'Crypto-X Ltd', meta: ['Lagos', '02:14', '38× / dag'],
-    why: 'Een hoog bedrag, midden in de nacht, naar een locatie die het model nooit eerder zag — en bijna veertig keer op één dag. Elk kenmerk apart kan; deze combinatie niet.',
+    why: 'Een hoog bedrag, midden in de nacht, naar een locatie die het model nooit eerder zag, en bijna veertig keer op één dag. Elk kenmerk apart kan; deze combinatie niet.',
     risk: 87, amt: '€ 1.700', score: '−0.74',
   },
   {

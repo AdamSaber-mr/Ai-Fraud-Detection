@@ -12,7 +12,7 @@ const CANDIDATES = [
   { x: 508, y: 196, score: '−0.66' },
 ]
 const CW = 51, CH = 58
-const CAPS = ['splitsing 1 — bedrag', 'splitsing 2 — uur', 'splitsing 3 — locatie', 'splitsing 4 — frequentie']
+const CAPS = ['splitsing 1, bedrag', 'splitsing 2, uur', 'splitsing 3, locatie', 'splitsing 4, frequentie']
 
 function buildBgDots() {
   let s = 20240620
@@ -90,7 +90,7 @@ export default function Isolation() {
 
   const focus = step === 5
   const caption = focus
-    ? (<><b>1 betaling</b> — apart gezet na 4 snedes</>)
+    ? (<><b>1 betaling</b>, apart gezet na 4 snedes</>)
     : (step === 0 ? '47 betalingen scannen…' : CAPS[step - 1])
 
   const dim = (isTarget) => (focus ? (isTarget ? 1 : 0.12) : (isTarget ? 1 : 0.85))
@@ -106,7 +106,7 @@ export default function Isolation() {
             lines={[<>Het kent geen fraude.</>, <>Alleen <span className="accent-word">gewoon</span>.</>]}
           />
           <Reveal as="p" className="body" delay={0.2}>
-            Een <b>Isolation Forest</b> stelt willekeurige vragen — hoger of lager dan
+            Een <b>Isolation Forest</b> stelt willekeurige vragen: hoger of lager dan
             deze grens, voor of na dit uur? Een doodgewone betaling lijkt op honderden
             andere en is pas na véél vragen los te pellen.
           </Reveal>

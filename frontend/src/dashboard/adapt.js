@@ -78,7 +78,7 @@ export function buildVerdict(t) {
   if (t.location_score < 0.4) parts.push('een onbekende locatie (' + t.location + ')')
   if (t.daily_frequency > 7) parts.push(Math.round(t.daily_frequency) + ' transacties op één dag')
   if (parts.length === 0)
-    return 'Deze transactie past binnen het normale patroon. Het model ziet geen afwijkende signalen — er zijn veel splits nodig om ’m te isoleren.'
+    return 'Deze transactie past binnen het normale patroon. Het model ziet geen afwijkende signalen, er zijn veel splits nodig om ’m te isoleren.'
   if (parts.length === 1)
     return 'Het model ziet ' + parts[0] + '. Daardoor wijkt de transactie af van het normale patroon en wordt ze met weinig splits geïsoleerd.'
   return (
@@ -102,8 +102,8 @@ export function detailFeatures(t) {
     return { label, val, pct, color, note: n > 0.45 ? hi : lo }
   }
   return [
-    mk('Bedrag', eur(t.amount), amtN, 'Hoog bedrag — ongewoon', 'Normaal bedrag'),
-    mk('Tijdstip', hh(t.hour), nightN, 'Midden in de nacht', 'Overdag — normaal'),
+    mk('Bedrag', eur(t.amount), amtN, 'Hoog bedrag, ongewoon', 'Normaal bedrag'),
+    mk('Tijdstip', hh(t.hour), nightN, 'Midden in de nacht', 'Overdag, normaal'),
     mk('Locatie', t.location_score.toFixed(2) + ' · ' + t.location, locN, 'Onbekende locatie', 'Vertrouwde locatie'),
     mk('Frequentie', Math.round(t.daily_frequency) + '× vandaag', freqN, 'Ongewoon vaak', 'Normaal tempo'),
   ]

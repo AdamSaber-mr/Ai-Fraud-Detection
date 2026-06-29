@@ -178,7 +178,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
           <div style={{ position: 'relative', marginBottom: 8 }}>
             <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 2, maxWidth: '60%' }}>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 17, fontWeight: 600 }}>Transactieruimte</div>
-              <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>Elke stip is één transactie — uitschieters drijven naar de randen en lichten op.</div>
+              <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>Elke stip is één transactie, uitschieters drijven naar de randen en lichten op.</div>
             </div>
             <span style={{ ...rotatePill, position: 'absolute', top: 6, right: 6, zIndex: 2 }}>auto-roteert</span>
             <EChart option={scatter} style={{ height: 420 }} />
@@ -232,7 +232,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
             <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 2, maxWidth: '62%' }}>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 16, fontWeight: 600 }}>Transactieruimte (3D)</div>
               <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>
-                Normale transacties klonteren samen in het midden — fraude drijft als heldere uitschieter naar de randen.
+                Normale transacties klonteren samen in het midden, fraude drijft als heldere uitschieter naar de randen.
               </div>
             </div>
             <span style={{ ...rotatePill, position: 'absolute', top: 6, right: 6, zIndex: 2 }}>auto-roteert</span>

@@ -60,7 +60,7 @@ export default function Figures() {
             <span><i style={{ background: 'var(--accent)' }} />Fraude 9</span>
           </div>
           <Reveal as="div" className="matrix-cap" delay={0.2}>
-            Elk bolletje is één betaling. <b>14 van de 200</b> vielen op — niet omdat ze
+            Elk bolletje is één betaling. <b>14 van de 200</b> vielen op, niet omdat ze
             op eerdere fraude leken, maar omdat ze zich anders gedroegen dan de rest.
           </Reveal>
         </div>

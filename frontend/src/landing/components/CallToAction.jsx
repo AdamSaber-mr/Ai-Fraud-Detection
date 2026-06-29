@@ -10,7 +10,7 @@ export default function CallToAction({ onTry }) {
         lines={[<>Genoeg verteld.</>, <>Open het <span className="accent-word">dashboard</span>.</>]}
       />
       <Reveal as="p" className="lead" delay={0.2}>
-        Bekijk dezelfde nacht als een live overzicht — de cijfers, de transacties en
+        Bekijk dezelfde nacht als een live overzicht, de cijfers, de transacties en
         het moment waarop het model afwijkingen naar boven brengt.
       </Reveal>
       <Reveal delay={0.3}>
@@ -22,7 +22,7 @@ export default function CallToAction({ onTry }) {
         Prototype · voorbeelddata, geen echte transacties
       </Reveal>
       <Reveal as="div" className="sign" delay={0.42}>
-        <b>Sentinel</b> — AI-fraudedetectie · Isolation Forest · scikit-learn
+        <b>Sentinel</b> · AI-fraudedetectie · Isolation Forest · scikit-learn
         &nbsp;·&nbsp; Prototype, Adam Saber
       </Reveal>
     </section>

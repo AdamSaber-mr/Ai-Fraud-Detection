@@ -51,13 +51,13 @@ export default function DataScreen({ onLoadDemo, onUpload }) {
               marginBottom: 14,
             }}
           >
-            Stap 1 — Data
+            Stap 1 · Data
           </span>
           <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 40, fontWeight: 600, letterSpacing: '-.025em', margin: '0 0 12px', lineHeight: 1.05 }}>
             Laad transactiedata in
           </h1>
           <p style={{ fontSize: 16, color: 'var(--text2)', margin: '0 auto', maxWidth: 520, lineHeight: 1.55 }}>
-            Het Isolation-Forest-model leert wat normaal gedrag is en markeert vervolgens elke transactie die daarvan afwijkt — zonder ooit een
+            Het Isolation-Forest-model leert wat normaal gedrag is en markeert vervolgens elke transactie die daarvan afwijkt, zonder ooit een
             voorbeeld van fraude te zien.
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function DataScreen({ onLoadDemo, onUpload }) {
             <div>
               <div style={{ fontFamily: "'Space Grotesk'", fontSize: 19, fontWeight: 600, marginBottom: 6 }}>Demo data</div>
               <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.5 }}>
-                Zo'n 200 voorbeeldtransacties met ingebouwde fraudepatronen — direct klaar om te analyseren.
+                Zo'n 200 voorbeeldtransacties met ingebouwde fraudepatronen, direct klaar om te analyseren.
               </div>
             </div>
             <span style={{ marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13.5, fontWeight: 600, color: 'var(--accent)' }}>

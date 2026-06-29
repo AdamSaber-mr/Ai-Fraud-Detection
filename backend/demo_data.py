@@ -41,5 +41,6 @@ def generate_demo_dataframe() -> pd.DataFrame:
 
     df = pd.concat([normal, fraud, susp], ignore_index=True)
     df = df.sample(frac=1, random_state=42).reset_index(drop=True)
-    df.insert(0, 'transaction_id', [f'TXN-{i:05d}' for i in range(1, len(df) + 1)])
+    df.insert(0, 'transaction_id', [
+              f'TXN-{i:05d}' for i in range(1, len(df) + 1)])
     return df

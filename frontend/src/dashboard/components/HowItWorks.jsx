@@ -22,13 +22,13 @@ export default function HowItWorks() {
           marginBottom: 12,
         }}
       >
-        De techniek — Isolation Forest
+        De techniek · Isolation Forest
       </span>
       <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 30, fontWeight: 600, letterSpacing: '-.025em', margin: '0 0 12px', lineHeight: 1.1 }}>
         Hoe pikt het model fraude eruit?
       </h1>
       <p style={{ fontSize: 16, color: 'var(--text2)', maxWidth: 680, lineHeight: 1.6, margin: '0 0 28px' }}>
-        Het model heeft <strong style={{ color: 'var(--text)' }}>geen voorbeelden van fraude</strong> nodig. Het leert simpelweg wat normaal is — en
+        Het model heeft <strong style={{ color: 'var(--text)' }}>geen voorbeelden van fraude</strong> nodig. Het leert simpelweg wat normaal is, en
         alles wat daar ver van afwijkt, valt op. Stel je een spel voor: hoe weinig vragen heb je nodig om één punt te isoleren?
       </p>
 

@@ -78,13 +78,13 @@ export default function App() {
     }
   }
 
-  const onLoadDemo = () => runRequest(loadDemoData, 'Demo data geladen — model uitgevoerd')
+  const onLoadDemo = () => runRequest(loadDemoData, 'Demo data geladen, model uitgevoerd')
   const onUpload = (file) => {
     if (!file.name.toLowerCase().endsWith('.csv')) {
       setError('Alleen .csv-bestanden worden ondersteund.')
       return
     }
-    runRequest(() => uploadCSV(file), `“${file.name}” verwerkt — model uitgevoerd`)
+    runRequest(() => uploadCSV(file), `“${file.name}” verwerkt, model uitgevoerd`)
   }
 
   const onNav = (s) => {
