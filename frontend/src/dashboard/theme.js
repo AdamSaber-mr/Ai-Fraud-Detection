@@ -4,20 +4,21 @@
 // → fraude (rose pop), so the three statuses are easy to tell apart.
 export const PALETTES = {
   donker: {
-    bg: '#070709',
-    bg2: '#0d0d11',
-    surface: '#141418',
-    surface2: '#1d1d23',
-    border: '#2a2a32',
+    bg: '#08070c',
+    bg2: '#100c18',
+    surface: '#16131e',
+    surface2: '#221d30',
+    border: '#2f2a3d',
     text: '#f5f4f8',
-    text2: '#bfbfca',
-    text3: '#8a8a96',
+    text2: '#c5bfd6',
+    text3: '#928aa3',
     accent: '#bca6f5',
-    safe: '#6f6f80',
-    warn: '#a98cf0',
+    safe: '#52c8c0',
+    warn: '#b08cf5',
     danger: '#f0688f',
-    axis: '#23232b',
-    split: '#16161b',
+    amber: '#f5b56b',
+    axis: '#2a2536',
+    split: '#1a1624',
   },
 }
 
@@ -38,9 +39,11 @@ export function cssVars(theme) {
     '--safe': p.safe,
     '--warn': p.warn,
     '--danger': p.danger,
-    // Whisper of lavender glow at the very top over a black floor — barely there,
-    // so the background reads as clean black and the cards stand out.
-    '--depth': `radial-gradient(120% 70% at 50% -12%, ${hexA(p.accent, 0.05)} 0%, transparent 48%), radial-gradient(100% 100% at 50% 120%, ${hexA('#000000', 0.35)} 0%, transparent 60%), ${p.bg}`,
+    '--amber': p.amber,
+    // A warmer, more alive backdrop: a lavender glow up top, a teal wash bottom-left
+    // and a rose hint bottom-right over a deep aubergine floor — enough colour to feel
+    // lit, still dark enough to keep the cards crisp.
+    '--depth': `radial-gradient(110% 70% at 50% -10%, ${hexA(p.accent, 0.1)} 0%, transparent 50%), radial-gradient(80% 80% at 8% 108%, ${hexA(p.safe, 0.07)} 0%, transparent 55%), radial-gradient(80% 80% at 96% 112%, ${hexA(p.danger, 0.06)} 0%, transparent 55%), radial-gradient(100% 100% at 50% 120%, ${hexA('#000000', 0.3)} 0%, transparent 60%), ${p.bg}`,
   }
 }
 

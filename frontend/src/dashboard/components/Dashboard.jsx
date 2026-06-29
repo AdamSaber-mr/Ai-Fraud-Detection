@@ -12,10 +12,25 @@ const cardTitle = { fontFamily: "'Space Grotesk'", fontSize: 15, fontWeight: 600
 
 function Kpi({ label: lbl, value, sub, dot }) {
   return (
-    <div className="fd-glass" style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div
+      className="fd-glass fd-card-hover"
+      style={{
+        padding: '20px 22px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden',
+        // A faint wash of the card's own colour from the top corner, so each KPI
+        // reads at a glance and the band feels lit rather than flat.
+        background: `radial-gradient(120% 80% at 100% 0%, color-mix(in srgb,${dot} 14%,transparent) 0%, transparent 60%), color-mix(in srgb, var(--surface) 70%, transparent)`,
+      }}
+    >
+      {/* a thin colour bar pinned to the top edge */}
+      <span style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${dot}, color-mix(in srgb,${dot} 20%,transparent))` }} />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={label}>{lbl}</span>
-        <span style={{ width: 8, height: 8, borderRadius: 999, background: dot, boxShadow: `0 0 0 4px color-mix(in srgb,${dot} 16%,transparent)` }} />
+        <span style={{ width: 9, height: 9, borderRadius: 999, background: dot, boxShadow: `0 0 0 4px color-mix(in srgb,${dot} 18%,transparent)` }} />
       </div>
       <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 34, fontWeight: 600, lineHeight: 1, letterSpacing: '-.02em', color: 'var(--text)' }}>
         {value}
@@ -107,7 +122,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, onRowClick,
         <Kpi label="Transacties" value={<CountUp to={kpi.total} group />} dot="var(--accent)" sub="volledig geanalyseerd" />
         <Kpi label="Verdacht" value={<CountUp to={kpi.suspicious} group />} dot="var(--warn)" sub={`${kpi.pct}% van het totaal`} />
         <Kpi label="Fraude-alerts" value={<CountUp to={kpi.fraudAlerts} group />} dot="var(--danger)" sub="hoog risico" />
-        <Kpi label="Bedrag gemarkeerd" value={<CountUp to={kpi.flaggedAmount} prefix="€ " group />} dot="var(--text3)" sub="in verdachte transacties" />
+        <Kpi label="Bedrag gemarkeerd" value={<CountUp to={kpi.flaggedAmount} prefix="€ " group />} dot="var(--amber)" sub="in verdachte transacties" />
       </div>
 
       {/* Two quiet charts */}

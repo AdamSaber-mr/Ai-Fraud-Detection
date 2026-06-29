@@ -1,6 +1,20 @@
 import { PALETTES, hexA } from './theme'
 import { STATUS } from './constants'
 
+// A soft top-to-bottom gradient from a lighter tint of the colour down to the
+// colour itself — gives flat segments and bars a bit of dimension.
+const grad = (color) => ({
+  type: 'linear',
+  x: 0,
+  y: 0,
+  x2: 0,
+  y2: 1,
+  colorStops: [
+    { offset: 0, color: hexA(color, 0.95) },
+    { offset: 1, color: hexA(color, 0.6) },
+  ],
+})
+
 // Honour the user's reduced-motion preference — ECharts' animation engine is
 // outside CSS's reach, so it needs an explicit check.
 const prefersReducedMotion = () =>
@@ -34,9 +48,9 @@ export function donutOption(bands, theme) {
         label: { show: false },
         labelLine: { show: false },
         data: [
-          { value: bands.normaal, name: 'Normaal', itemStyle: { color: p.safe } },
-          { value: bands.verdacht, name: 'Verdacht', itemStyle: { color: p.warn } },
-          { value: bands.fraude, name: 'Fraude', itemStyle: { color: p.danger } },
+          { value: bands.normaal, name: 'Normaal', itemStyle: { color: grad(p.safe) } },
+          { value: bands.verdacht, name: 'Verdacht', itemStyle: { color: grad(p.warn) } },
+          { value: bands.fraude, name: 'Fraude', itemStyle: { color: grad(p.danger) } },
         ],
       },
     ],
@@ -77,7 +91,7 @@ export function barOption(transactions, theme) {
         type: 'bar',
         stack: 'a',
         data: normal,
-        itemStyle: { color: hexA(p.safe, 0.55), borderRadius: [0, 0, 2, 2] },
+        itemStyle: { color: grad(p.safe), borderRadius: [0, 0, 2, 2] },
         barWidth: '62%',
       },
       {
@@ -85,7 +99,7 @@ export function barOption(transactions, theme) {
         type: 'bar',
         stack: 'a',
         data: susp,
-        itemStyle: { color: p.danger, borderRadius: [3, 3, 0, 0] },
+        itemStyle: { color: grad(p.danger), borderRadius: [3, 3, 0, 0] },
       },
     ],
   }

@@ -170,7 +170,7 @@ body {
   height: 38vw;
   left: 30vw;
   bottom: -18vh;
-  background: radial-gradient(circle, rgba(127, 184, 166, 0.22), transparent 66%);
+  background: radial-gradient(circle, rgba(82, 200, 192, 0.32), transparent 66%);
   animation: fd-drift3 40s ease-in-out infinite;
 }
 @keyframes fd-drift1 {
