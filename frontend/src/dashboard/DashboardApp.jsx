@@ -19,7 +19,6 @@ const theme = 'donker'
 
 export default function App() {
   const [screen, setScreen] = useState('data')
-  const [layout, setLayout] = useState('overzicht')
   const [filter, setFilter] = useState('alle')
   const [loading, setLoading] = useState(false)
   const [loadStep, setLoadStep] = useState(0)
@@ -165,8 +164,6 @@ export default function App() {
               bands={data.bands}
               transactions={data.transactions}
               theme={theme}
-              layout={layout}
-              onSeg={setLayout}
               onRowClick={setSelId}
               onGoTx={() => setScreen('transacties')}
             />

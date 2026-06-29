@@ -1,23 +1,23 @@
-// Aubergine-noir + lavender — one dark signature palette, matching the landing
-// story. Lavender is the system accent; the three status colours (teal → gold →
-// rose) form the safe→warn→danger data spectrum used across charts and risk bars
-// and stay inside the cool/warm purple family so nothing clashes with the story.
+// Clean dark skin — a near-black aubergine canvas lit by a single lavender
+// accent, matching the landing story. The data spectrum is purple-forward:
+// normaal (dim lavender) → verdacht (bright lavender) → fraude (rose pop), so
+// flagged transactions read louder than normal ones without a noisy rainbow.
 export const PALETTES = {
   donker: {
-    bg: '#15111c',
-    bg2: '#1d1727',
-    surface: '#241d34',
-    surface2: '#2f2645',
-    border: '#3f3659',
-    text: '#f2eff8',
-    text2: '#b7aecb',
-    text3: '#897ea4',
-    accent: '#b9a3f0',
-    safe: '#7fb8a6',
-    warn: '#d6a85f',
-    danger: '#e0729a',
-    axis: '#352c4a',
-    split: '#241d33',
+    bg: '#0a0810',
+    bg2: '#100c19',
+    surface: '#171221',
+    surface2: '#1f1830',
+    border: '#2b2340',
+    text: '#f3effb',
+    text2: '#b2a9c8',
+    text3: '#7d7398',
+    accent: '#bca6f5',
+    safe: '#6f6594',
+    warn: '#a78cf0',
+    danger: '#ec6a9f',
+    axis: '#241d36',
+    split: '#191325',
   },
 }
 
@@ -34,13 +34,13 @@ export function cssVars(theme) {
     '--text2': p.text2,
     '--text3': p.text3,
     '--accent': p.accent,
-    '--accent-dp': '#8b72d6',
+    '--accent-dp': '#9a82e4',
     '--safe': p.safe,
     '--warn': p.warn,
     '--danger': p.danger,
-    // Cinematic depth backdrop: a lit lavender centre that falls off into a dark
-    // aubergine vignette, evoking looking into the 3D transaction field.
-    '--depth': `radial-gradient(120% 90% at 50% -10%, ${hexA(p.accent, 0.1)} 0%, transparent 46%), radial-gradient(90% 80% at 86% 16%, ${hexA(p.safe, 0.05)} 0%, transparent 55%), radial-gradient(100% 100% at 50% 125%, ${hexA('#000000', 0.3)} 0%, transparent 60%), ${p.bg}`,
+    // A calm lavender glow bleeding down from the top into a black floor — clean,
+    // no texture. Gives the flat cards something quiet to sit on.
+    '--depth': `radial-gradient(120% 75% at 50% -10%, ${hexA(p.accent, 0.08)} 0%, transparent 50%), radial-gradient(100% 100% at 50% 120%, ${hexA('#000000', 0.4)} 0%, transparent 60%), ${p.bg}`,
   }
 }
 

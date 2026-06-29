@@ -49,7 +49,7 @@ export default function Topbar() {
             color: 'var(--text2)',
           }}
         >
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--safe)', boxShadow: '0 0 0 3px color-mix(in srgb,var(--safe) 22%,transparent)', animation: 'fd-pulse 2.4s infinite' }} />
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)', animation: 'fd-pulse 2.4s infinite' }} />
           Model actief
         </span>
         <div

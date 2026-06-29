@@ -161,8 +161,8 @@ export default function Sidebar({ screen, onNav }) {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: 'var(--safe)',
-              boxShadow: '0 0 0 3px color-mix(in srgb,var(--safe) 22%,transparent)',
+              background: 'var(--accent)',
+              boxShadow: '0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)',
               animation: 'fd-pulse 2.4s infinite',
             }}
           />
