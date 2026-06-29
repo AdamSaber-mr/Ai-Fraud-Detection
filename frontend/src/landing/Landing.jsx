@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useDive } from '../transition/diveContext'
 import AuroraBg from './components/AuroraBg'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -10,8 +10,8 @@ import Footer from './components/Footer'
 import './styles.css'
 
 export default function Landing() {
-  const navigate = useNavigate()
-  const open = () => navigate('/dashboard')
+  const dive = useDive()
+  const open = () => dive('/dashboard')
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   return (
