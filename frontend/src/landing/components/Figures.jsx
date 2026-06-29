@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { SectionHead, Kinetic, Reveal, CountUp } from '../anim'
+import { Kinetic, Reveal, CountUp } from '../anim'
 
 // 200 transacties als puntenraster; 9 fraude + 5 verdacht lichten op.
 function buildCells() {
@@ -29,7 +29,6 @@ export default function Figures() {
 
   return (
     <section id="cijfers" className="head-center band band-light">
-      <SectionHead no="01">Wat het model zag</SectionHead>
       <Kinetic
         as="h2"
         className="kin"

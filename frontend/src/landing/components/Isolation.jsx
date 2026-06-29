@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { SectionHead, Kinetic, Reveal } from '../anim'
+import { Kinetic, Reveal } from '../anim'
 
 // Kandidaten die het model om de beurt isoleert — verspreid over het veld,
 // elk in een rustige hoek zodat hun cel schoon kan worden uitgesneden.
@@ -97,7 +97,6 @@ export default function Isolation() {
 
   return (
     <section id="model" className="band band-dark">
-      <SectionHead no="02">Hoe het model denkt</SectionHead>
       <div className="iso-wrap">
         <div>
           <Kinetic
