@@ -22,7 +22,7 @@ export default function HowItWorks() {
           marginBottom: 12,
         }}
       >
-        De techniek · Isolation Forest
+        De techniek · Ensemble-detectie
       </span>
       <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 30, fontWeight: 600, letterSpacing: '-.025em', margin: '0 0 12px', lineHeight: 1.1 }}>
         Hoe pikt het model fraude eruit?

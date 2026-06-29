@@ -67,45 +67,68 @@ function decorate(t) {
     chipColor: colorVarFromStatus(status),
     is_fraud: !!t.is_fraud,
     risk_level: t.risk_level,
+    // Real model output for the "why flagged" panel (absent on older responses).
+    contributions: t.contributions || null,
+    reasons: Array.isArray(t.reasons) ? t.reasons : null,
   }
 }
 
-// Plain-language "why flagged" verdict, derived from the real feature values.
-export function buildVerdict(t) {
-  const parts = []
-  if (t.amount > 400) parts.push('een hoog bedrag van ' + eur(t.amount))
-  if (t.hour < 6 || t.hour >= 22) parts.push('een transactie midden in de nacht (' + hh(t.hour) + ')')
-  if (t.location_score < 0.4) parts.push('een onbekende locatie (' + t.location + ')')
-  if (t.daily_frequency > 7) parts.push(Math.round(t.daily_frequency) + ' transacties op één dag')
+// Plain-language "why flagged" verdict. Prefers the model's own data-driven
+// reasons (measured against the normal crowd); falls back to a simple heuristic
+// only for responses that predate the explainability fields.
+function composeVerdict(parts) {
   if (parts.length === 0)
     return 'Deze transactie past binnen het normale patroon. Het model ziet geen afwijkende signalen, er zijn veel splits nodig om ’m te isoleren.'
   if (parts.length === 1)
-    return 'Het model ziet ' + parts[0] + '. Daardoor wijkt de transactie af van het normale patroon en wordt ze met weinig splits geïsoleerd.'
+    return 'Het model ziet ' + parts[0] + '. Daardoor wijkt de transactie af van het normale patroon en wordt ze door de detectoren snel geïsoleerd.'
   return (
     'Het model combineert ' +
     parts.slice(0, -1).join(', ') +
     ' en ' +
     parts[parts.length - 1] +
-    '. Die combinatie maakt de transactie ongewoon, waardoor ze al na weinig splits opvalt.'
+    '. Die combinatie maakt de transactie ongewoon, waardoor de detectoren ’m al snel oppikken.'
   )
 }
 
-// Per-feature contribution bars for the detail panel.
+export function buildVerdict(t) {
+  if (Array.isArray(t.reasons)) return composeVerdict(t.reasons)
+  // Fallback heuristic (no backend reasons available).
+  const parts = []
+  if (t.amount > 400) parts.push('een hoog bedrag van ' + eur(t.amount))
+  if (t.hour < 6 || t.hour >= 22) parts.push('een transactie midden in de nacht (' + hh(t.hour) + ')')
+  if (t.location_score < 0.4) parts.push('een onbekende locatie (' + t.location + ')')
+  if (t.daily_frequency > 7) parts.push(Math.round(t.daily_frequency) + ' transacties op één dag')
+  return composeVerdict(parts)
+}
+
+// Per-feature contribution bars for the detail panel. Uses the model's own
+// 0-100 contribution scores (how far each feature sits from the normal crowd);
+// falls back to a heuristic only when the backend didn't supply them.
+function bar(label, val, pct, hi, lo) {
+  const color = pct >= 60 ? 'var(--danger)' : pct >= 35 ? 'var(--warn)' : 'var(--safe)'
+  return { label, val, pct, color, note: pct > 45 ? hi : lo }
+}
+
 export function detailFeatures(t) {
+  const c = t.contributions
+  if (c) {
+    return [
+      bar('Bedrag', eur(t.amount), Math.round(c.amount), 'Hoog bedrag, ongewoon', 'Normaal bedrag'),
+      bar('Tijdstip', hh(t.hour), Math.round(c.hour), 'Ongewoon tijdstip', 'Overdag, normaal'),
+      bar('Locatie', t.location_score.toFixed(2) + ' · ' + t.location, Math.round(c.location), 'Onbekende locatie', 'Vertrouwde locatie'),
+      bar('Frequentie', Math.round(t.daily_frequency) + '× vandaag', Math.round(c.frequency), 'Ongewoon vaak', 'Normaal tempo'),
+    ]
+  }
+  // Fallback heuristic (no backend contributions available).
   const amtN = Math.min(t.amount / 1500, 1)
   const nightN = t.hour < 6 ? 1 : t.hour >= 22 ? 0.7 : 0.06
   const locN = 1 - t.location_score
   const freqN = Math.min(t.daily_frequency / 25, 1)
-  const mk = (label, val, n, hi, lo) => {
-    const pct = Math.round(n * 100)
-    const color = pct >= 60 ? 'var(--danger)' : pct >= 35 ? 'var(--warn)' : 'var(--safe)'
-    return { label, val, pct, color, note: n > 0.45 ? hi : lo }
-  }
   return [
-    mk('Bedrag', eur(t.amount), amtN, 'Hoog bedrag, ongewoon', 'Normaal bedrag'),
-    mk('Tijdstip', hh(t.hour), nightN, 'Midden in de nacht', 'Overdag, normaal'),
-    mk('Locatie', t.location_score.toFixed(2) + ' · ' + t.location, locN, 'Onbekende locatie', 'Vertrouwde locatie'),
-    mk('Frequentie', Math.round(t.daily_frequency) + '× vandaag', freqN, 'Ongewoon vaak', 'Normaal tempo'),
+    bar('Bedrag', eur(t.amount), Math.round(amtN * 100), 'Hoog bedrag, ongewoon', 'Normaal bedrag'),
+    bar('Tijdstip', hh(t.hour), Math.round(nightN * 100), 'Midden in de nacht', 'Overdag, normaal'),
+    bar('Locatie', t.location_score.toFixed(2) + ' · ' + t.location, Math.round(locN * 100), 'Onbekende locatie', 'Vertrouwde locatie'),
+    bar('Frequentie', Math.round(t.daily_frequency) + '× vandaag', Math.round(freqN * 100), 'Ongewoon vaak', 'Normaal tempo'),
   ]
 }
 
