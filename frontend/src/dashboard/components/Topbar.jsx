@@ -17,41 +17,9 @@ export default function Topbar() {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 7,
-            fontSize: 11,
-            fontWeight: 600,
-            fontFamily: "'IBM Plex Mono'",
-            letterSpacing: '.04em',
-            color: 'var(--text2)',
-            padding: '5px 11px',
-            border: '1px solid var(--border)',
-            borderRadius: 999,
-            background: 'var(--surface)',
-          }}
-        >
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warn)' }} />
-          DEMO-MODUS
-        </span>
         <span style={{ fontSize: 13, color: 'var(--text3)' }}>Anomaliedetectie zonder fraudevoorbeelden</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 7,
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--text2)',
-          }}
-        >
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)', animation: 'fd-pulse 2.4s infinite' }} />
-          Model actief
-        </span>
         <div
           style={{
             width: 34,

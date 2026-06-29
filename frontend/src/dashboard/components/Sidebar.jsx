@@ -153,27 +153,6 @@ export default function Sidebar({ screen, onNav }) {
           )
         })}
       </nav>
-
-      <div style={{ marginTop: 'auto', border: '1px solid var(--border)', borderRadius: 12, padding: '13px 14px', background: 'var(--surface)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: 'var(--accent)',
-              boxShadow: '0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)',
-              animation: 'fd-pulse 2.4s infinite',
-            }}
-          />
-          <span style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap' }}>Model actief</span>
-        </div>
-        <div style={{ fontSize: 11.5, color: 'var(--text3)', fontFamily: "'IBM Plex Mono'", lineHeight: 1.5 }}>
-          Isolation Forest
-          <br />
-          200 bomen · scikit-learn
-        </div>
-      </div>
     </aside>
   )
 }
