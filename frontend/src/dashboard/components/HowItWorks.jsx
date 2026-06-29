@@ -24,7 +24,7 @@ export default function HowItWorks() {
       >
         De techniek · Isolation Forest
       </span>
-      <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 30, fontWeight: 600, letterSpacing: '-.025em', margin: '0 0 12px', lineHeight: 1.1 }}>
+      <h1 className="fd-neon" style={{ fontFamily: "'Chakra Petch'", fontSize: 30, fontWeight: 600, letterSpacing: '.01em', color: 'var(--text)', margin: '0 0 12px', lineHeight: 1.12 }}>
         Hoe pikt het model fraude eruit?
       </h1>
       <p style={{ fontSize: 16, color: 'var(--text2)', maxWidth: 680, lineHeight: 1.6, margin: '0 0 28px' }}>
@@ -36,7 +36,7 @@ export default function HowItWorks() {
         <div className="fd-glass" style={card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 4 }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--safe)' }} />
-            <span style={{ fontFamily: "'Space Grotesk'", fontSize: 16, fontWeight: 600 }}>Normale transactie</span>
+            <span style={{ fontFamily: "'Chakra Petch'", fontSize: 16, fontWeight: 600 }}>Normale transactie</span>
           </div>
           <p style={{ fontSize: 13, color: 'var(--text2)', margin: '0 0 14px', lineHeight: 1.5 }}>
             Zit middenin de massa. Je moet véél keer splitsen voor je 'm los hebt.
@@ -67,7 +67,7 @@ export default function HowItWorks() {
         <div className="fd-glass" style={card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 4 }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--danger)' }} />
-            <span style={{ fontFamily: "'Space Grotesk'", fontSize: 16, fontWeight: 600 }}>Verdachte transactie</span>
+            <span style={{ fontFamily: "'Chakra Petch'", fontSize: 16, fontWeight: 600 }}>Verdachte transactie</span>
           </div>
           <p style={{ fontSize: 13, color: 'var(--text2)', margin: '0 0 14px', lineHeight: 1.5 }}>Staat ver van de rest. Eén splitsing en hij is al geïsoleerd.</p>
           <svg viewBox="0 0 260 170" style={{ width: '100%', height: 'auto', display: 'block' }}>
@@ -113,7 +113,7 @@ export default function HowItWorks() {
         </p>
       </div>
 
-      <h2 style={{ fontFamily: "'Space Grotesk'", fontSize: 19, fontWeight: 600, margin: '0 0 14px' }}>Waar het model naar kijkt</h2>
+      <h2 style={{ fontFamily: "'Chakra Petch'", fontSize: 19, fontWeight: 600, margin: '0 0 14px' }}>Waar het model naar kijkt</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14 }}>
         {FEATURES.map((f) => (
           <div key={f.code} className="fd-glass" style={{ padding: 18 }}>

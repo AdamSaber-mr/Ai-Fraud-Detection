@@ -33,10 +33,10 @@ export default function Topbar() {
             background: 'var(--surface)',
           }}
         >
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warn)' }} />
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warn)', boxShadow: '0 0 8px 0 var(--warn)' }} />
           DEMO-MODUS
         </span>
-        <span style={{ fontSize: 13, color: 'var(--text3)' }}>Anomaliedetectie zonder fraudevoorbeelden</span>
+        <span style={{ fontSize: 12.5, color: 'var(--text3)', fontFamily: "'IBM Plex Mono'", letterSpacing: '.02em' }}>Anomaliedetectie zonder fraudevoorbeelden</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span
@@ -44,12 +44,15 @@ export default function Topbar() {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 7,
-            fontSize: 12,
+            fontFamily: "'IBM Plex Mono'",
+            fontSize: 11.5,
             fontWeight: 600,
-            color: 'var(--text2)',
+            letterSpacing: '.06em',
+            textTransform: 'uppercase',
+            color: 'var(--safe)',
           }}
         >
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--safe)', boxShadow: '0 0 0 3px color-mix(in srgb,var(--safe) 22%,transparent)', animation: 'fd-pulse 2.4s infinite' }} />
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--safe)', boxShadow: '0 0 10px 1px var(--safe)', animation: 'fd-pulse 2.4s infinite' }} />
           Model actief
         </span>
         <div

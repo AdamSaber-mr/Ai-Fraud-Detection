@@ -53,7 +53,7 @@ export default function DataScreen({ onLoadDemo, onUpload }) {
           >
             Stap 1 · Data
           </span>
-          <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 40, fontWeight: 600, letterSpacing: '-.025em', margin: '0 0 12px', lineHeight: 1.05 }}>
+          <h1 className="fd-neon" style={{ fontFamily: "'Chakra Petch'", fontSize: 38, fontWeight: 600, letterSpacing: '.01em', color: 'var(--text)', margin: '0 0 12px', lineHeight: 1.08 }}>
             Laad transactiedata in
           </h1>
           <p style={{ fontSize: 16, color: 'var(--text2)', margin: '0 auto', maxWidth: 520, lineHeight: 1.55 }}>
@@ -96,7 +96,7 @@ export default function DataScreen({ onLoadDemo, onUpload }) {
               </svg>
             </div>
             <div>
-              <div style={{ fontFamily: "'Space Grotesk'", fontSize: 19, fontWeight: 600, marginBottom: 6 }}>Demo data</div>
+              <div style={{ fontFamily: "'Chakra Petch'", fontSize: 19, fontWeight: 600, marginBottom: 6 }}>Demo data</div>
               <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.5 }}>
                 Zo'n 200 voorbeeldtransacties met ingebouwde fraudepatronen, direct klaar om te analyseren.
               </div>
@@ -155,7 +155,7 @@ export default function DataScreen({ onLoadDemo, onUpload }) {
               </svg>
             </div>
             <div>
-              <div style={{ fontFamily: "'Space Grotesk'", fontSize: 19, fontWeight: 600, marginBottom: 6 }}>Upload CSV</div>
+              <div style={{ fontFamily: "'Chakra Petch'", fontSize: 19, fontWeight: 600, marginBottom: 6 }}>Upload CSV</div>
               <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.5 }}>
                 Sleep je eigen bestand of klik om te kiezen. Verwacht:{' '}
                 <span style={{ fontFamily: "'IBM Plex Mono'", color: 'var(--text)', fontSize: 12 }}>amount, hour, location_score, daily_frequency</span>

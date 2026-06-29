@@ -59,7 +59,7 @@ export default function LoadingOverlay({ step }) {
             />
           </div>
           <div>
-            <div style={{ fontFamily: "'Space Grotesk'", fontSize: 17, fontWeight: 600 }}>Model traint…</div>
+            <div style={{ fontFamily: "'Chakra Petch'", fontSize: 17, fontWeight: 600 }}>Model traint…</div>
             <div style={{ fontSize: 12.5, color: 'var(--text3)' }}>Isolation Forest op de data</div>
           </div>
         </div>
