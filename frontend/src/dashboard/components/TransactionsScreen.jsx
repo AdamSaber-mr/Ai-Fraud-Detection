@@ -36,7 +36,7 @@ export default function TransactionsScreen({ transactions, filter, onFilter, onR
     <div style={{ padding: '26px 28px 40px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 20 }}>
         <div>
-          <h1 className="fd-neon" style={{ fontFamily: "'Chakra Petch'", fontSize: 26, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text)', margin: '0 0 4px' }}>Transacties</h1>
+          <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 26, fontWeight: 600, letterSpacing: '-.02em', margin: '0 0 4px' }}>Transacties</h1>
           <p style={{ margin: 0, fontSize: 13.5, color: 'var(--text2)' }}>
             <span style={{ fontFamily: "'IBM Plex Mono'", color: 'var(--text)' }}>{filtered.length}</span> resultaten · klik voor detail
           </p>

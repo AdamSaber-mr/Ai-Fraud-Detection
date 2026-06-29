@@ -22,7 +22,7 @@ export default function EmptyState({ onGoData }) {
           animation: 'fd-fade .28s var(--ease-out) both',
         }}
       >
-        <div style={{ fontFamily: "'Chakra Petch'", fontSize: 22, fontWeight: 600 }}>Nog geen data geanalyseerd</div>
+        <div style={{ fontFamily: "'Space Grotesk'", fontSize: 22, fontWeight: 600 }}>Nog geen data geanalyseerd</div>
         <p style={{ color: 'var(--text2)', maxWidth: 380, margin: 0, lineHeight: 1.5 }}>
           Laad eerst transactiedata in zodat het model de resultaten kan tonen.
         </p>

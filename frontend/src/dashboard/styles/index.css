@@ -127,48 +127,36 @@ body {
   }
 }
 
-/* ----- console backdrop: the dark room the operations grid sits in ----- */
+/* ----- depth backdrop: the cinematic "looking into the field" layer ----- */
 .fd-depth {
   background: var(--depth);
 }
-/* perspective operations grid — faint cyan lines, brightest up top, fading down */
+/* faint topographic contour texture, layered on top of the depth gradient */
 .fd-depth::before {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 1px);
-  background-size: 46px 46px;
-  opacity: 0.5;
-  mask-image: radial-gradient(125% 95% at 50% -5%, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 78%);
-  -webkit-mask-image: radial-gradient(125% 95% at 50% -5%, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 78%);
-}
-/* hairline scanlines + a slow travelling sweep, the SOC "live feed" texture */
-.fd-depth::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.16) 3px
+  background-image: repeating-radial-gradient(
+    circle at 50% 36%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 0,
+    color-mix(in srgb, var(--accent) 6%, transparent) 1px,
+    transparent 1px,
+    transparent 56px
   );
-  opacity: 0.4;
+  opacity: 0.22;
+  mask-image: radial-gradient(120% 100% at 50% 30%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 30%, #000 0%, transparent 75%);
 }
 
-/* ----- drifting glow orbs: neon haze behind the console ----- */
+/* ----- drifting aurora: the landing story's lavender glow, behind the app ----- */
 .fd-aurora {
   position: absolute;
   inset: -20% -10%;
   z-index: 0;
   pointer-events: none;
-  filter: blur(130px);
-  opacity: 0.3;
+  filter: blur(120px);
+  opacity: 0.28;
   overflow: hidden;
 }
 .fd-aurora b {
@@ -181,25 +169,25 @@ body {
 .fd-aurora .a1 {
   width: 46vw;
   height: 46vw;
-  left: -8vw;
-  top: -14vh;
-  background: radial-gradient(circle, rgba(42, 240, 224, 0.4), transparent 66%);
+  left: -6vw;
+  top: -12vh;
+  background: radial-gradient(circle, rgba(139, 114, 214, 0.42), transparent 66%);
   animation: fd-drift1 34s ease-in-out infinite;
 }
 .fd-aurora .a2 {
-  width: 38vw;
-  height: 38vw;
+  width: 40vw;
+  height: 40vw;
   right: -6vw;
-  top: 6vh;
-  background: radial-gradient(circle, rgba(55, 245, 166, 0.26), transparent 66%);
+  top: 8vh;
+  background: radial-gradient(circle, rgba(185, 163, 240, 0.3), transparent 66%);
   animation: fd-drift2 46s ease-in-out infinite;
 }
 .fd-aurora .a3 {
-  width: 36vw;
-  height: 36vw;
-  left: 32vw;
-  bottom: -20vh;
-  background: radial-gradient(circle, rgba(42, 240, 224, 0.18), transparent 66%);
+  width: 38vw;
+  height: 38vw;
+  left: 30vw;
+  bottom: -18vh;
+  background: radial-gradient(circle, rgba(127, 184, 166, 0.22), transparent 66%);
   animation: fd-drift3 40s ease-in-out infinite;
 }
 @keyframes fd-drift1 {
@@ -215,32 +203,14 @@ body {
   50% { transform: translate(4vw, -5vh) scale(1.15); }
 }
 
-/* ----- neon console panel (the old .fd-glass, now sharp + lit) ----- */
+/* ----- frosted glass panel ----- */
 .fd-glass {
-  position: relative;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent) 4%, transparent), transparent 40%),
-    color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--accent) 16%, transparent),
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 18px 48px -28px rgba(0, 0, 0, 0.85);
-  border-radius: 10px;
-}
-/* clipped corner notch — the techno "cut corner" detail */
-.fd-glass::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 12px;
-  height: 12px;
-  background: linear-gradient(225deg, color-mix(in srgb, var(--accent) 38%, transparent) 0 50%, transparent 50%);
-  border-top-right-radius: 10px;
-  pointer-events: none;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid color-mix(in srgb, var(--accent) 13%, var(--border));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 50px -30px rgba(0, 0, 0, 0.7);
+  border-radius: 16px;
 }
 @media (prefers-reduced-transparency: reduce) {
   .fd-glass {
@@ -248,11 +218,6 @@ body {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-}
-
-/* ----- neon glow text helper ----- */
-.fd-neon {
-  text-shadow: 0 0 14px color-mix(in srgb, currentColor 55%, transparent);
 }
 
 /* ----- press feedback (any pressable element) ----- */

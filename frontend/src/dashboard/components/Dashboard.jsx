@@ -4,19 +4,16 @@ import { scatterOption, donutOption, barOption } from '../charts'
 import { CountUp } from '../anim'
 
 const panel = { padding: '18px 20px' }
-const sgTitle = { fontFamily: "'Chakra Petch'", fontSize: 14, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase' }
+const sgTitle = { fontFamily: "'Space Grotesk'", fontSize: 15, fontWeight: 600 }
 
 const rotatePill = {
-  fontSize: 10,
+  fontSize: 10.5,
   fontFamily: "'IBM Plex Mono'",
-  letterSpacing: '.08em',
-  textTransform: 'uppercase',
   color: 'var(--accent)',
-  border: '1px solid color-mix(in srgb,var(--accent) 45%,transparent)',
-  borderRadius: 4,
+  border: '1px solid color-mix(in srgb,var(--accent) 40%,transparent)',
+  borderRadius: 999,
   padding: '3px 9px',
   background: 'color-mix(in srgb,var(--accent) 10%,transparent)',
-  boxShadow: '0 0 14px -2px color-mix(in srgb,var(--accent) 45%,transparent)',
 }
 
 function Kpi({ label, value, dot, valueColor, sub }) {
@@ -26,7 +23,7 @@ function Kpi({ label, value, dot, valueColor, sub }) {
         <span style={{ fontSize: 12.5, color: 'var(--text2)', fontWeight: 500 }}>{label}</span>
         <span style={{ width: 9, height: 9, borderRadius: 999, background: dot, boxShadow: `0 0 0 4px color-mix(in srgb,${dot} 18%,transparent)` }} />
       </div>
-      <span className="fd-neon" style={{ fontFamily: "'IBM Plex Mono'", fontSize: 33, fontWeight: 600, lineHeight: 1, letterSpacing: '-.02em', color: valueColor || 'var(--text)' }}>
+      <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 33, fontWeight: 600, lineHeight: 1, letterSpacing: '-.02em', color: valueColor || 'var(--text)' }}>
         {value}
       </span>
       <span style={{ fontSize: 12, color: 'var(--text3)' }}>{sub}</span>
@@ -141,17 +138,14 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
         onClick={() => onSeg(key)}
         className="fd-seg-btn"
         style={{
-          fontFamily: "'IBM Plex Mono'",
-          fontSize: 12,
+          font: 'inherit',
+          fontSize: 13,
           fontWeight: 600,
-          letterSpacing: '.05em',
-          textTransform: 'uppercase',
           padding: '7px 15px',
-          borderRadius: 6,
+          borderRadius: 999,
           border: 'none',
           background: on ? 'var(--accent)' : 'transparent',
-          color: on ? '#04201d' : 'var(--text2)',
-          boxShadow: on ? '0 0 18px -2px color-mix(in srgb,var(--accent) 70%,transparent)' : 'none',
+          color: on ? '#1a1326' : 'var(--text2)',
           cursor: 'pointer',
         }}
       >
@@ -164,13 +158,13 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
     <div style={{ padding: '26px 28px 40px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 22 }}>
         <div>
-          <h1 className="fd-neon" style={{ fontFamily: "'Chakra Petch'", fontSize: 26, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text)', margin: '0 0 4px' }}>Overzicht</h1>
+          <h1 style={{ fontFamily: "'Space Grotesk'", fontSize: 26, fontWeight: 600, letterSpacing: '-.02em', margin: '0 0 4px' }}>Overzicht</h1>
           <p style={{ margin: 0, fontSize: 13.5, color: 'var(--text2)' }}>
             <span style={{ fontFamily: "'IBM Plex Mono'", color: 'var(--text)' }}>{kpi.total.toLocaleString('nl-NL')}</span> transacties geanalyseerd · zojuist
             bijgewerkt
           </p>
         </div>
-        <div style={{ display: 'inline-flex', borderRadius: 9, padding: 4, gap: 3 }} className="fd-glass">
+        <div style={{ display: 'inline-flex', borderRadius: 999, padding: 4, gap: 3 }} className="fd-glass">
           {seg('overzicht', 'Overzicht')}
           {seg('visueel', 'Visueel')}
           {seg('analyse', 'Analyse')}
@@ -183,7 +177,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
           {/* HERO — the 3D transaction cloud floating in the depth field */}
           <div style={{ position: 'relative', marginBottom: 8 }}>
             <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 2, maxWidth: '60%' }}>
-              <div style={{ fontFamily: "'Chakra Petch'", fontSize: 16, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase' }}>Transactieruimte</div>
+              <div style={{ fontFamily: "'Space Grotesk'", fontSize: 17, fontWeight: 600 }}>Transactieruimte</div>
               <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>Elke stip is één transactie, uitschieters drijven naar de randen en lichten op.</div>
             </div>
             <span style={{ ...rotatePill, position: 'absolute', top: 6, right: 6, zIndex: 2 }}>auto-roteert</span>
@@ -236,7 +230,7 @@ export default function Dashboard({ kpi, bands, transactions, theme, layout, onS
         <>
           <div style={{ position: 'relative', marginBottom: 16 }}>
             <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 2, maxWidth: '62%' }}>
-              <div style={{ fontFamily: "'Chakra Petch'", fontSize: 16, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase' }}>Transactieruimte (3D)</div>
+              <div style={{ fontFamily: "'Space Grotesk'", fontSize: 16, fontWeight: 600 }}>Transactieruimte (3D)</div>
               <div style={{ fontSize: 12.5, color: 'var(--text2)', marginTop: 2 }}>
                 Normale transacties klonteren samen in het midden, fraude drijft als heldere uitschieter naar de randen.
               </div>

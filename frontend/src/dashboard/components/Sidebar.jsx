@@ -89,20 +89,19 @@ export default function Sidebar({ screen, onNav }) {
           style={{
             width: 32,
             height: 32,
-            borderRadius: 7,
-            background: 'linear-gradient(135deg,var(--accent),var(--safe))',
-            boxShadow: '0 0 18px -2px color-mix(in srgb,var(--accent) 75%,transparent)',
+            borderRadius: 9,
+            background: 'linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 50%,var(--safe)))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
           }}
         >
-          <div style={{ width: 11, height: 11, background: '#04201d', transform: 'rotate(45deg)', borderRadius: 2 }} />
+          <div style={{ width: 11, height: 11, background: '#fff', transform: 'rotate(45deg)', borderRadius: 2 }} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-          <span className="fd-neon" style={{ fontFamily: "'Chakra Petch'", fontWeight: 700, fontSize: 16, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text)' }}>Sentinel</span>
-          <span style={{ fontSize: 10.5, color: 'var(--text3)', fontFamily: "'IBM Plex Mono'", letterSpacing: '.08em', textTransform: 'uppercase' }}>AI fraudedetectie</span>
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+          <span style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 16, letterSpacing: '-.01em' }}>Sentinel</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)', fontFamily: "'IBM Plex Mono'", letterSpacing: '.02em' }}>AI fraudedetectie</span>
         </div>
       </button>
 
@@ -145,7 +144,6 @@ export default function Sidebar({ screen, onNav }) {
                   width: 3,
                   borderRadius: '0 3px 3px 0',
                   background: 'var(--accent)',
-                  boxShadow: '0 0 12px 0 var(--accent)',
                   opacity: on ? 1 : 0,
                 }}
               />
@@ -168,7 +166,7 @@ export default function Sidebar({ screen, onNav }) {
               animation: 'fd-pulse 2.4s infinite',
             }}
           />
-          <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11.5, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: 'var(--safe)' }}>Model actief</span>
+          <span style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap' }}>Model actief</span>
         </div>
         <div style={{ fontSize: 11.5, color: 'var(--text3)', fontFamily: "'IBM Plex Mono'", lineHeight: 1.5 }}>
           Isolation Forest

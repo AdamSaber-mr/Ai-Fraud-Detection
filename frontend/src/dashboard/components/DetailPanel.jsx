@@ -48,7 +48,7 @@ export default function DetailPanel({ tx, onClose }) {
               {tx.initial}
             </div>
             <div>
-              <div style={{ fontFamily: "'Chakra Petch'", fontSize: 18, fontWeight: 600 }}>{tx.merchant}</div>
+              <div style={{ fontFamily: "'Space Grotesk'", fontSize: 18, fontWeight: 600 }}>{tx.merchant}</div>
               <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12, color: 'var(--text3)' }}>
                 {tx.ref} · {tx.location}
               </div>
