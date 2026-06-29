@@ -30,12 +30,14 @@ def generate_demo_dataframe() -> pd.DataFrame:
         'label': 1,
     })
 
-    # Mildly suspicious: elevated but not extreme — should land in the middle band.
+    # Mildly suspicious: clearly elevated on several axes, but nowhere near the
+    # extremes of the fraud cluster — a smart model should rank these in the
+    # middle 'verdacht' band rather than as outright fraud.
     susp = pd.DataFrame({
-        'amount': np.clip(rng.normal(58, 2, n_susp), 54, None).round(2),
-        'hour': np.full(n_susp, 19),
-        'location_score': rng.uniform(0.74, 0.76, n_susp).round(4),
-        'daily_frequency': np.clip(rng.normal(3.3, 0.1, n_susp), 3.2, None).round(2),
+        'amount': np.clip(rng.normal(320, 45, n_susp), 200, None).round(2),
+        'hour': rng.choice([22, 23], n_susp),
+        'location_score': rng.uniform(0.45, 0.6, n_susp).round(4),
+        'daily_frequency': np.clip(rng.normal(10, 1.5, n_susp), 7, None).round(2),
         'label': 1,
     })
 

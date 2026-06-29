@@ -88,5 +88,6 @@ def build_response(df: pd.DataFrame, source: str) -> dict:
         'status': 'success',
         'source': source,
         'stats': stats,
+        'model': detector.model_info(),
         'transactions': _sample_transactions(result_df),
     }
