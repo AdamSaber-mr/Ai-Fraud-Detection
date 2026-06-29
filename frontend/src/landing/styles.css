@@ -300,6 +300,41 @@ p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
 .legend { display: flex; gap: 22px; margin-top: 18px; font-size: 13px; color: var(--muted); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 
+/* ===== Footer: diepzwarte afsluiting onder de story ===== */
+.site-footer {
+  position: relative; z-index: 2;
+  background: #000;
+  border-top: 1px solid rgba(185,163,240,0.12);
+  padding: 72px clamp(24px, 6vw, 96px) 40px;
+}
+.foot-inner {
+  max-width: 1120px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 48px; flex-wrap: wrap;
+}
+.foot-brand { max-width: 42ch; }
+.foot-logo {
+  font: inherit; background: none; border: 0; cursor: pointer; padding: 0;
+  font-size: 22px; font-weight: 700; letter-spacing: 0.02em; color: var(--text);
+}
+.foot-logo:hover { color: var(--accent); }
+.foot-tag { margin-top: 14px; color: var(--faint); font-size: 14.5px; line-height: 1.6; }
+.foot-nav { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; }
+.foot-nav a,
+.foot-link {
+  font: inherit; font-size: 14px; color: var(--muted); text-decoration: none;
+  background: none; border: 0; cursor: pointer; padding: 0;
+  position: relative; transition: color .25s ease;
+}
+.foot-nav a:hover,
+.foot-link:hover { color: var(--accent); }
+.foot-bottom {
+  max-width: 1120px; margin: 48px auto 0; padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  color: var(--faint); font-size: 13px;
+}
+
 @media (max-width: 920px) {
   .nav .links { display: none; }
   .hero { grid-template-columns: 1fr; gap: 8vh; }
@@ -315,6 +350,8 @@ p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
   .card .score { text-align: left; }
   .kpis { grid-template-columns: 1fr 1fr; }
   .dash-grid { grid-template-columns: 1fr; }
+  .foot-inner { flex-direction: column; gap: 28px; }
+  .foot-bottom { flex-direction: column; gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sring, .scrollhint .bar::after, .aurora b, .fn-node { animation: none !important; }

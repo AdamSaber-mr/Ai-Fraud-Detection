@@ -6,6 +6,7 @@ import Figures from './components/Figures'
 import Isolation from './components/Isolation'
 import Signals from './components/Signals'
 import CallToAction from './components/CallToAction'
+import Footer from './components/Footer'
 import './styles.css'
 
 export default function Landing() {
@@ -26,6 +27,8 @@ export default function Landing() {
         <Signals />
         <CallToAction onTry={open} />
       </main>
+
+      <Footer onTry={open} onBrand={toTop} />
     </div>
   )
 }
