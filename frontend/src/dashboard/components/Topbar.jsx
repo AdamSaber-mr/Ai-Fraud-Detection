@@ -1,4 +1,4 @@
-export default function Topbar() {
+export default function Topbar({ onExport }) {
   return (
     <header
       style={{
@@ -20,6 +20,28 @@ export default function Topbar() {
         <span style={{ fontSize: 13, color: 'var(--text3)' }}>Anomaliedetectie zonder fraudevoorbeelden</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {onExport && (
+          <button
+            onClick={onExport}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
+              height: 34,
+              padding: '0 14px',
+              borderRadius: 9,
+              background: 'color-mix(in srgb,var(--accent) 18%,var(--surface))',
+              border: '1px solid color-mix(in srgb,var(--accent) 40%,var(--border))',
+              color: 'var(--accent)',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: "'IBM Plex Sans',system-ui,sans-serif",
+            }}
+          >
+            ↓ Exporteer CSV
+          </button>
+        )}
         <div
           style={{
             width: 34,

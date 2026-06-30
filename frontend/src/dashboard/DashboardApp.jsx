@@ -3,6 +3,7 @@ import './styles/index.css'
 import { cssVars } from './theme'
 import { loadDemoData, uploadCSV } from './api'
 import { adaptResponse } from './adapt'
+import { exportTransactionsCSV } from './exportCsv'
 import Sidebar from './components/Sidebar'
 import Topbar from './components/Topbar'
 import DataScreen from './components/DataScreen'
@@ -123,7 +124,7 @@ export default function App() {
       <Sidebar screen={screen} onNav={onNav} />
 
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative', zIndex: 1 }}>
-        <Topbar />
+        <Topbar onExport={hasData ? () => exportTransactionsCSV(data.transactions) : null} />
 
         <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
           {error && (
