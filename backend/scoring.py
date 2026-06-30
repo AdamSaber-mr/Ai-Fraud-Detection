@@ -29,6 +29,8 @@ def status_of(risk):
 def to_python(value):
     """numpy-getallen omzetten naar gewone Python-getallen, zodat ze in JSON
     passen. Gewone waarden (tekst, lijsten) laten we met rust."""
+    # numpy-getallen hebben een .item()-functie (gewone tekst/lijsten niet);
+    # die maakt er een normaal Python-getal van dat wel in JSON past.
     if hasattr(value, 'item'):
         return value.item()
     return value
@@ -47,6 +49,9 @@ def add_risk_columns(result):
     risks = []
     statuses = []
     for score in scores:
+        # Omrekenen naar 0-100. (hoogste - score) draait het om: de LAAGSTE
+        # score wordt het HOOGSTE risico. Delen door 'span' maakt er een deel
+        # tussen 0 en 1 van, '* 100' maakt er een percentage van.
         risk = round((hoogste - score) / span * 100)
         if risk < 0:
             risk = 0
@@ -83,6 +88,9 @@ def make_stats(result):
     medium_risk_count = len(result[result['risk_level'] == 'MEDIUM'])
 
     # Tellingen op basis van het risicogetal 0-100 (de banden in het dashboard).
+    # result[result['risk'] >= 70] = alleen de rijen met risico 70 of hoger;
+    # len(...) telt hoeveel dat er zijn. De '&' betekent 'EN' (allebei waar),
+    # en elk deel moet tussen haakjes (verplicht in pandas).
     fraud_alert_count = len(result[result['risk'] >= RISK_FRAUD])
     suspicious_count = len(result[(result['risk'] >= RISK_SUSPICIOUS) & (result['risk'] < RISK_FRAUD)])
     normal_band_count = len(result[result['risk'] < RISK_SUSPICIOUS])
@@ -116,6 +124,8 @@ def make_stats(result):
 def make_transactions(result):
     """Stuur alle gemarkeerde transacties terug + een willekeurige greep uit de
     normale transacties, tot maximaal MAX_TRANSACTIONS rijen."""
+    # to_dict(orient='records') maakt van de tabel een lijst met dictionaries,
+    # eentje per rij: [{'amount': 50, 'hour': 14, ...}, {...}, ...].
     fraud_rows = result[result['is_fraud'] == True].to_dict(orient='records')
     normal_rows = result[result['is_fraud'] == False].to_dict(orient='records')
 
@@ -125,6 +135,7 @@ def make_transactions(result):
         if ruimte < 0:
             ruimte = 0
         if ruimte < len(normal_rows):
+            # random.sample pakt willekeurig 'ruimte' rijen uit de normale lijst.
             normal_rows = random.sample(normal_rows, ruimte)
 
     rows = fraud_rows + normal_rows

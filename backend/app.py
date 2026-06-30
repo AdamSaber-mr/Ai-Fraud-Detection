@@ -24,6 +24,7 @@ app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
 os.makedirs(config.UPLOAD_FOLDER, exist_ok=True)
 
 # Alleen onze eigen frontend mag de API aanroepen.
+# r'/api/*' = geldt voor alle adressen die met /api/ beginnen.
 CORS(app, resources={r'/api/*': {'origins': config.CORS_ORIGINS}})
 
 
@@ -52,7 +53,11 @@ def prepare_features(df):
     for col in FraudDetector.FEATURES:
         if col not in df.columns:
             df[col] = 0.0
+        # to_numeric zet tekst om in getallen; errors='coerce' maakt van iets
+        # wat geen getal is een lege waarde (NaN) in plaats van een crash.
         df[col] = pd.to_numeric(df[col], errors='coerce')
+        # Lege waarden opvullen met het gemiddelde van de kolom (of 0 als de
+        # hele kolom leeg is). fillna = 'fill not-a-number'.
         if df[col].notna().any():
             df[col] = df[col].fillna(df[col].mean())
         else:
@@ -63,6 +68,9 @@ def prepare_features(df):
 # ---------------------------------------------------------------------- #
 # Routes
 # ---------------------------------------------------------------------- #
+# @app.route koppelt een webadres (URL) aan een functie: roept iemand
+# /api/health aan, dan draait de functie hieronder en wordt het resultaat
+# als antwoord teruggestuurd.
 @app.route('/api/health')
 def health():
     return jsonify({'status': 'ok', 'message': 'Fraud Detection API running'})
@@ -82,7 +90,8 @@ def upload():
     if not file.filename.lower().endswith('.csv'):
         return error('Alleen .csv-bestanden worden geaccepteerd.', 400)
 
-    # Sla op onder een unieke naam, zodat uploads elkaar niet overschrijven.
+    # uuid4().hex is een lange willekeurige code; zo krijgt elk bestand een
+    # unieke naam en overschrijven twee uploads elkaar nooit.
     filename = uuid.uuid4().hex + '.csv'
     filepath = os.path.join(config.UPLOAD_FOLDER, filename)
     file.save(filepath)
@@ -106,6 +115,8 @@ def upload():
 # ---------------------------------------------------------------------- #
 # Veiligheid + foutafhandeling
 # ---------------------------------------------------------------------- #
+# @app.after_request draait NA elk verzoek; hier voegen we beveiligings-
+# regels toe aan elk antwoord (bv. niet in een iframe laden).
 @app.after_request
 def add_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -114,6 +125,7 @@ def add_security_headers(response):
     return response
 
 
+# @app.errorhandler vangt een bepaalde fout op. 413 = bestand te groot.
 @app.errorhandler(413)
 def too_large(e):
     return error('Bestand te groot. Maximum is ' + str(config.MAX_UPLOAD_MB) + ' MB.', 413)
