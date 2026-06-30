@@ -16,7 +16,8 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; scrollbar-width: none; /* Firefox: verberg de root-scrollbar */ }
+html::-webkit-scrollbar { display: none; } /* Chrome/Safari: idem — scrollen blijft werken */
 ::selection { background: rgba(185,163,240,0.28); color: #fff; }
 
 /* Scoped to the landing route so the dashboard's own type scale stays intact. */
@@ -118,13 +119,16 @@ p.body { color: var(--muted); max-width: 50ch; margin-top: 22px; }
 .gtrack i.grad { background: linear-gradient(90deg, var(--accent-dp), var(--accent)); }
 
 /* ===== Hero ===== */
-.hero { position: relative; display: flex; align-items: center; overflow: hidden;
+.hero { position: relative; display: flex; align-items: center;
   min-height: 100vh; border-top: none; padding: calc(var(--nav-h) + 4vh) 8vw 8vh; }
 .outro { padding-bottom: 140px; }
 .hero-copy { position: relative; z-index: 2; max-width: 620px; }
 
 /* ===== Fraude-netwerk (hero-achtergrond) ===== */
-.fraudnet { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+/* full-bleed: breekt uit de gecentreerde sectie (max-width 1320) naar de volle
+   viewport-breedte, zodat het netwerk de hele hero dekt — geen randen links/rechts */
+.fraudnet { position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100vw; z-index: 0; overflow: hidden; pointer-events: none; }
 .fraudnet svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 /* veil: lichte scrim achter de koptekst; netwerk blijft over de volle breedte zichtbaar */
 .fraudnet::after { content: ''; position: absolute; inset: 0; pointer-events: none;
