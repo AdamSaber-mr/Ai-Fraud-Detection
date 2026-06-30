@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sentinel</title>
+    <!-- GitHub Pages serveert dit bestand bij een onbekend pad (bv. na verversen op
+         /dashboard). We coderen het pad in de query en sturen door naar de app;
+         index.html zet de echte URL daarna terug. pathSegmentsToKeep = 1 omdat de
+         site onder /<repo>/ staat. -->
+    <script>
+      (function (l) {
+        var pathSegmentsToKeep = 1
+        l.replace(
+          l.protocol +
+            '//' +
+            l.hostname +
+            (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') +
+            '/?/' +
+            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash,
+        )
+      })(window.location)
+    </script>
+  </head>
+  <body></body>
+</html>
