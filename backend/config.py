@@ -1,43 +1,26 @@
-"""Application configuration, driven by environment variables with safe defaults.
+"""Instellingen voor de server.
 
-Every value can be overridden via the environment so the same code runs locally
-and in a hardened deployment without edits."""
+De meeste waarden kun je via 'environment variables' aanpassen, maar er staan
+veilige standaardwaarden in zodat het lokaal meteen werkt."""
 import os
 
+# Beveiliging: debug staat standaard UIT. Alleen aanzetten via FLASK_DEBUG=1.
+# (Met debug aan kan iemand code uitvoeren op de server — dus uit laten.)
+DEBUG = os.environ.get('FLASK_DEBUG', '') == '1'
 
-def _env_bool(name: str, default: bool = False) -> bool:
-    val = os.environ.get(name)
-    if val is None:
-        return default
-    return val.strip().lower() in ('1', 'true', 'yes', 'on')
+# De server draait standaard alleen op deze computer.
+HOST = '127.0.0.1'
+PORT = 5001
 
+# Welke websites de API mogen aanroepen (alleen onze eigen frontend).
+CORS_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173']
 
-class Config:
-    # Debug exposes the Werkzeug debugger (arbitrary code execution) and stack
-    # traces — it must stay OFF unless explicitly enabled for local dev.
-    DEBUG = _env_bool('FLASK_DEBUG', False)
+# Uploadlimieten (beschermt het geheugen tegen veel te grote bestanden).
+MAX_UPLOAD_MB = 5
+MAX_CONTENT_LENGTH = MAX_UPLOAD_MB * 1024 * 1024
 
-    # Bind to localhost by default; only expose externally on purpose.
-    HOST = os.environ.get('HOST', '127.0.0.1')
-    PORT = int(os.environ.get('PORT', '5001'))
+# Maximaal aantal rijen dat we uit een upload lezen.
+MAX_ROWS = 50000
 
-    # CORS allow-list for the API (comma-separated). Defaults to the Vite dev server.
-    CORS_ORIGINS = [
-        o.strip()
-        for o in os.environ.get(
-            'CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173'
-        ).split(',')
-        if o.strip()
-    ]
-
-    # Reject uploads larger than this to avoid memory exhaustion (Flask -> 413).
-    MAX_UPLOAD_MB = int(os.environ.get('MAX_UPLOAD_MB', '5'))
-    MAX_CONTENT_LENGTH = MAX_UPLOAD_MB * 1024 * 1024
-
-    # Hard cap on rows processed from an upload (extra DoS guard).
-    MAX_ROWS = int(os.environ.get('MAX_ROWS', '50000'))
-
-    # Temp folder for uploaded CSVs (files are deleted right after processing).
-    UPLOAD_FOLDER = os.environ.get(
-        'UPLOAD_FOLDER', os.path.join(os.path.dirname(__file__), 'uploads')
-    )
+# Tijdelijke map voor geuploade CSV-bestanden (worden na gebruik verwijderd).
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')

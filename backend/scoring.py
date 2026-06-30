@@ -1,21 +1,24 @@
-"""Turns raw Isolation Forest output into the JSON shape the frontend consumes.
+"""Maakt van de modeluitkomst het JSON-antwoord dat de frontend verwacht.
 
-Keeps the HTTP/response concerns out of model.py (pure ML) and app.py (routing)."""
+Het model (model.py) doet het echte rekenwerk. Hier zetten we de uitkomst om
+in nette getallen voor het dashboard: een risico van 0-100, de tellingen (KPI's)
+en de lijst met transacties."""
 import random
-
-import pandas as pd
 
 from model import FraudDetector
 
-# Risk-score band thresholds (0-100). Kept in sync with the frontend constants.
+# Grenzen voor het risico (0-100). Moet gelijk blijven aan de frontend
+# (frontend/src/dashboard/constants.js).
 RISK_FRAUD = 70
 RISK_SUSPICIOUS = 45
 
-# Cap the number of transactions returned in the payload (stats use the full set).
+# Maximaal aantal transacties dat we terugsturen. De tellingen gaan wel over
+# de HELE dataset, alleen de lijst is afgekapt.
 MAX_TRANSACTIONS = 500
 
 
-def status_of(risk: int) -> str:
+def status_of(risk):
+    """Zet een risicogetal (0-100) om in een status."""
     if risk >= RISK_FRAUD:
         return 'fraude'
     if risk >= RISK_SUSPICIOUS:
@@ -23,71 +26,135 @@ def status_of(risk: int) -> str:
     return 'normaal'
 
 
-def _json_safe(value):
-    """Convert numpy scalars to native Python types for JSON serialisation."""
-    return value.item() if hasattr(value, 'item') else value
+def to_python(value):
+    """numpy-getallen omzetten naar gewone Python-getallen, zodat ze in JSON
+    passen. Gewone waarden (tekst, lijsten) laten we met rust."""
+    if hasattr(value, 'item'):
+        return value.item()
+    return value
 
 
-def _add_risk_columns(result_df: pd.DataFrame) -> pd.DataFrame:
-    """Derive a 0-100 risk score from the anomaly score (lower score -> higher
-    risk) plus a status band, computed over the FULL dataset."""
-    scores = result_df['anomaly_score'].astype(float)
-    lo, hi = float(scores.min()), float(scores.max())
-    span = (hi - lo) or 1.0
-    result_df['risk'] = (((hi - scores) / span) * 100).round().clip(0, 100).astype(int)
-    result_df['status'] = result_df['risk'].apply(status_of)
-    return result_df
+def add_risk_columns(result):
+    """Reken de anomaly-score om naar een risico van 0-100 (een lage score
+    betekent een hoog risico) en bepaal de status."""
+    scores = result['anomaly_score']
+    laagste = float(scores.min())
+    hoogste = float(scores.max())
+    span = hoogste - laagste
+    if span == 0:
+        span = 1.0  # voorkom delen door nul
+
+    risks = []
+    statuses = []
+    for score in scores:
+        risk = round((hoogste - score) / span * 100)
+        if risk < 0:
+            risk = 0
+        if risk > 100:
+            risk = 100
+        risks.append(risk)
+        statuses.append(status_of(risk))
+
+    result['risk'] = risks
+    result['status'] = statuses
 
 
-def _band_stats(result_df: pd.DataFrame) -> dict:
-    """Full-dataset band counts + flagged amount for the dashboard KPIs / donut."""
-    risk = result_df['risk']
-    fraud_alert_count = int((risk >= RISK_FRAUD).sum())
-    suspicious_count = int(((risk >= RISK_SUSPICIOUS) & (risk < RISK_FRAUD)).sum())
-    normal_band_count = int((risk < RISK_SUSPICIOUS).sum())
-    flagged_amount = float(result_df.loc[risk >= RISK_SUSPICIOUS, 'amount'].sum())
+def make_stats(result):
+    """Bereken alle cijfers (KPI's) over de HELE dataset."""
+    total = len(result)
+
+    fraud_rows = result[result['is_fraud'] == True]
+    normal_rows = result[result['is_fraud'] == False]
+    fraud_count = len(fraud_rows)
+    normal_count = len(normal_rows)
+
+    # Gemiddelde bedragen (0 als er geen rijen zijn).
+    if fraud_count > 0:
+        avg_fraud_amount = round(float(fraud_rows['amount'].mean()), 2)
+    else:
+        avg_fraud_amount = 0
+    if normal_count > 0:
+        avg_normal_amount = round(float(normal_rows['amount'].mean()), 2)
+    else:
+        avg_normal_amount = 0
+
+    # Tellingen op basis van het risiconiveau van het model (HIGH / MEDIUM).
+    high_risk_count = len(result[result['risk_level'] == 'HIGH'])
+    medium_risk_count = len(result[result['risk_level'] == 'MEDIUM'])
+
+    # Tellingen op basis van het risicogetal 0-100 (de banden in het dashboard).
+    fraud_alert_count = len(result[result['risk'] >= RISK_FRAUD])
+    suspicious_count = len(result[(result['risk'] >= RISK_SUSPICIOUS) & (result['risk'] < RISK_FRAUD)])
+    normal_band_count = len(result[result['risk'] < RISK_SUSPICIOUS])
+
+    # Totaalbedrag van alles wat opvalt (verdacht + fraude).
+    flagged_rows = result[result['risk'] >= RISK_SUSPICIOUS]
+    flagged_amount = round(float(flagged_rows['amount'].sum()), 2)
+
+    if total > 0:
+        fraud_percentage = round(fraud_count / total * 100, 1)
+    else:
+        fraud_percentage = 0
+
     return {
+        'total': total,
+        'fraud_count': fraud_count,
+        'normal_count': normal_count,
+        'fraud_percentage': fraud_percentage,
+        'avg_fraud_amount': avg_fraud_amount,
+        'avg_normal_amount': avg_normal_amount,
+        'high_risk_count': high_risk_count,
+        'medium_risk_count': medium_risk_count,
         'fraud_alert_count': fraud_alert_count,
         'suspicious_count': suspicious_count,
         'normal_band_count': normal_band_count,
         'flagged_count': fraud_alert_count + suspicious_count,
-        'flagged_amount': round(flagged_amount, 2),
+        'flagged_amount': flagged_amount,
     }
 
 
-def _sample_transactions(result_df: pd.DataFrame) -> list:
-    """Keep all flagged rows plus a random sample of normal rows, up to the cap."""
-    fraud_rows = result_df[result_df['is_fraud']].to_dict(orient='records')
-    normal_rows = result_df[~result_df['is_fraud']].to_dict(orient='records')
+def make_transactions(result):
+    """Stuur alle gemarkeerde transacties terug + een willekeurige greep uit de
+    normale transacties, tot maximaal MAX_TRANSACTIONS rijen."""
+    fraud_rows = result[result['is_fraud'] == True].to_dict(orient='records')
+    normal_rows = result[result['is_fraud'] == False].to_dict(orient='records')
 
+    # Te veel rijen? Pak een willekeurige steekproef van de normale transacties.
     if len(fraud_rows) + len(normal_rows) > MAX_TRANSACTIONS:
-        remaining = max(MAX_TRANSACTIONS - len(fraud_rows), 0)
-        normal_rows = random.sample(normal_rows, min(remaining, len(normal_rows)))
+        ruimte = MAX_TRANSACTIONS - len(fraud_rows)
+        if ruimte < 0:
+            ruimte = 0
+        if ruimte < len(normal_rows):
+            normal_rows = random.sample(normal_rows, ruimte)
 
-    transactions = fraud_rows + normal_rows
-    random.shuffle(transactions)
+    rows = fraud_rows + normal_rows
+    random.shuffle(rows)
 
-    for t in transactions:
-        t['is_fraud'] = bool(t['is_fraud'])
-        for key, val in t.items():
-            t[key] = _json_safe(val)
-    return transactions
+    # Elke waarde JSON-veilig maken.
+    nette_rows = []
+    for row in rows:
+        nette_row = {}
+        for key in row:
+            nette_row[key] = to_python(row[key])
+        nette_row['is_fraud'] = bool(nette_row['is_fraud'])
+        nette_rows.append(nette_row)
+    return nette_rows
 
 
-def build_response(df: pd.DataFrame, source: str) -> dict:
-    """Train, score and assemble the full API payload for a transaction set."""
+def build_response(df, source):
+    """Train het model, scoor de transacties en bouw het hele antwoord op."""
     detector = FraudDetector()
     detector.train(df)
-    result_df = detector.predict(df)
+    result = detector.predict(df)
 
-    stats = detector.get_stats(result_df)
-    _add_risk_columns(result_df)
-    stats.update(_band_stats(result_df))
+    add_risk_columns(result)
+    stats = make_stats(result)
+    transactions = make_transactions(result)
 
     return {
         'status': 'success',
         'source': source,
         'stats': stats,
         'model': detector.model_info(),
-        'transactions': _sample_transactions(result_df),
+        'transactions': transactions,
     }
