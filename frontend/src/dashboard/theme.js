@@ -1,6 +1,6 @@
 // Clean dark skin — a neutral near-black canvas so content stays legible, lit by
 // a single lavender accent. The data spectrum uses three *distinct* hues rather
-// than three purples: normaal (neutral slate, low emphasis) → verdacht (lavender)
+// than three purples: normaal (neutral slate, low emphasis) → verdacht (orange)
 // → fraude (rose pop), so the three statuses are easy to tell apart.
 export const PALETTES = {
   donker: {
@@ -14,7 +14,7 @@ export const PALETTES = {
     text3: '#928aa3',
     accent: '#bca6f5',
     safe: '#52c8c0',
-    warn: '#b08cf5',
+    warn: '#f0883e',
     danger: '#f0688f',
     amber: '#f5b56b',
     axis: '#2a2536',
