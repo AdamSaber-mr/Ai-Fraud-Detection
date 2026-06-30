@@ -1,8 +1,4 @@
-"""Maakt van de modeluitkomst het JSON-antwoord dat de frontend verwacht.
-
-Het model (model.py) doet het echte rekenwerk. Hier zetten we de uitkomst om
-in nette getallen voor het dashboard: een risico van 0-100, de tellingen (KPI's)
-en de lijst met transacties."""
+# Zet de modeluitkomst om in het JSON-antwoord voor de frontend.
 import random
 
 from model import FraudDetector
@@ -18,7 +14,7 @@ MAX_TRANSACTIONS = 500
 
 
 def status_of(risk):
-    """Zet een risicogetal (0-100) om in een status."""
+    # Zet een risicogetal (0-100) om in een status.
     if risk >= RISK_FRAUD:
         return 'fraude'
     if risk >= RISK_SUSPICIOUS:
@@ -27,8 +23,8 @@ def status_of(risk):
 
 
 def to_python(value):
-    """numpy-getallen omzetten naar gewone Python-getallen, zodat ze in JSON
-    passen. Gewone waarden (tekst, lijsten) laten we met rust."""
+    # numpy-getallen omzetten naar gewone Python-getallen, zodat ze in JSON
+    # passen. Gewone waarden (tekst, lijsten) laten we met rust.
     # numpy-getallen hebben een .item()-functie (gewone tekst/lijsten niet);
     # die maakt er een normaal Python-getal van dat wel in JSON past.
     if hasattr(value, 'item'):
@@ -37,8 +33,8 @@ def to_python(value):
 
 
 def add_risk_columns(result):
-    """Reken de anomaly-score om naar een risico van 0-100 (een lage score
-    betekent een hoog risico) en bepaal de status."""
+    # Reken de anomaly-score om naar een risico van 0-100 (een lage score
+    # betekent een hoog risico) en bepaal de status.
     scores = result['anomaly_score']
     laagste = float(scores.min())
     hoogste = float(scores.max())
@@ -65,7 +61,7 @@ def add_risk_columns(result):
 
 
 def make_stats(result):
-    """Bereken alle cijfers (KPI's) over de HELE dataset."""
+    # Bereken alle cijfers (KPI's) over de HELE dataset.
     total = len(result)
 
     fraud_rows = result[result['is_fraud'] == True]
@@ -122,8 +118,8 @@ def make_stats(result):
 
 
 def make_transactions(result):
-    """Stuur alle gemarkeerde transacties terug + een willekeurige greep uit de
-    normale transacties, tot maximaal MAX_TRANSACTIONS rijen."""
+    # Stuur alle gemarkeerde transacties terug + een willekeurige greep uit de
+    # normale transacties, tot maximaal MAX_TRANSACTIONS rijen.
     # to_dict(orient='records') maakt van de tabel een lijst met dictionaries,
     # eentje per rij: [{'amount': 50, 'hour': 14, ...}, {...}, ...].
     fraud_rows = result[result['is_fraud'] == True].to_dict(orient='records')
@@ -153,7 +149,7 @@ def make_transactions(result):
 
 
 def build_response(df, source):
-    """Train het model, scoor de transacties en bouw het hele antwoord op."""
+    # Train het model, scoor de transacties en bouw het hele antwoord op.
     detector = FraudDetector()
     detector.train(df)
     result = detector.predict(df)

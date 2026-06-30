@@ -1,7 +1,4 @@
-"""Instellingen voor de server.
-
-De meeste waarden kun je via 'environment variables' aanpassen, maar er staan
-veilige standaardwaarden in zodat het lokaal meteen werkt."""
+# Instellingen voor de server.
 import os
 
 # Beveiliging: debug staat standaard UIT. Alleen aanzetten via FLASK_DEBUG=1.

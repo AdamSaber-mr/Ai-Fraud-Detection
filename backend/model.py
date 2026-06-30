@@ -1,16 +1,4 @@
-"""Het detectiemodel — puur machine learning, geen webcode.
-
-Dit gebruikt EEN Isolation Forest uit scikit-learn. Dat is een 'unsupervised'
-model: het krijgt nooit voorbeelden van echte fraude te zien. Het leert alleen
-hoe een NORMALE transactie eruitziet en markeert daarna de uitschieters.
-
-Hoe een Isolation Forest werkt, kort uitgelegd:
-het bouwt heel veel willekeurige beslisbomen die de data steeds in tweeen
-splitsen. Een normale transactie lijkt op veel andere en heeft dus veel splits
-nodig voordat ze alleen komt te staan. Een afwijkende transactie staat los van
-de rest en is al na een paar splits 'geisoleerd'. Hoe sneller geisoleerd, hoe
-verdachter de transactie.
-"""
+# Het detectiemodel: een Isolation Forest die afwijkende transacties opspoort.
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
@@ -18,13 +6,13 @@ from sklearn.preprocessing import StandardScaler
 
 
 def format_euro(amount):
-    """Maak van een bedrag een nette tekst, bv 1700 -> '€ 1.700'."""
+    # Maak van een bedrag een nette tekst, bv 1700 -> '€ 1.700'.
     getal = '{:,}'.format(round(amount))   # bv '1,700'
     return '€ ' + getal.replace(',', '.')  # bv '€ 1.700'
 
 
 def format_hour(hour):
-    """Maak van een uur een nette tijd, bv 3 -> '03:00'."""
+    # Maak van een uur een nette tijd, bv 3 -> '03:00'.
     return '{:02d}:00'.format(int(hour))
 
 
@@ -40,11 +28,10 @@ class FraudDetector:
         self.model = None
         self.is_trained = False
 
-    # ------------------------------------------------------------------ #
     # Trainen
-    # ------------------------------------------------------------------ #
+
     def train(self, df):
-        """Train het model op de transacties."""
+        # Train het model op de transacties.
         X = df[self.FEATURES]
 
         # Alle features op dezelfde schaal brengen. Een bedrag in euro's is veel
@@ -66,11 +53,10 @@ class FraudDetector:
         self.is_trained = True
         return {'status': 'trained', 'rows': len(df)}
 
-    # ------------------------------------------------------------------ #
     # Scoren (voorspellen)
-    # ------------------------------------------------------------------ #
+
     def predict(self, df):
-        """Geef elke transactie een score, een label en een risiconiveau."""
+        # Geef elke transactie een score, een label en een risiconiveau.
         result = df.copy()
         # transform (zonder 'fit'): dezelfde schaal als bij het trainen gebruiken.
         X_scaled = self.scaler.transform(df[self.FEATURES])
@@ -108,16 +94,15 @@ class FraudDetector:
         result['reasons'] = pd.Series(reasons, index=result.index)
         return result
 
-    # ------------------------------------------------------------------ #
     # Uitleg waarom een transactie opvalt (eenvoudige vuistregels)
-    # ------------------------------------------------------------------ #
+
     def _explain(self, df):
-        """Bereken per transactie hoe verdacht elke feature is (0-100) en zet
-        de hoogste scores om in korte zinnen voor de uitleg in het dashboard."""
+        # Bereken per transactie hoe verdacht elke feature is (0-100) en zet
+        # de hoogste scores om in korte zinnen voor de uitleg in het dashboard.
         contributions = []
         reasons = []
 
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             amount = float(row['amount'])
             hour = float(row['hour'])
             loc = float(row['location_score'])
@@ -172,7 +157,7 @@ class FraudDetector:
         return contributions, reasons
 
     def model_info(self):
-        """Korte beschrijving van het model, voor het dashboard."""
+        # Korte beschrijving van het model, voor het dashboard.
         return {
             'type': 'Isolation Forest',
             'features': self.FEATURES,

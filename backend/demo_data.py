@@ -1,8 +1,4 @@
-"""Maakt een nep-dataset met transacties voor de demo.
-
-We bouwen expres drie groepen: veel normale transacties, 10 duidelijke
-fraudegevallen en 4 twijfelgevallen. Zo kunnen we laten zien dat het model
-de fraude er echt uithaalt zonder dat het van tevoren weet wat fraude is."""
+# Maakt een nep-dataset met transacties voor de demo.
 import numpy as np
 import pandas as pd
 

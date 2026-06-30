@@ -1,8 +1,4 @@
-"""De webserver (Flask). Hier komen de verzoeken van de frontend binnen.
-
-Deze laag doet alleen het 'webwerk': de routes (/api/...), het controleren van
-een upload en nette foutmeldingen. Het echte rekenwerk zit in model.py en
-scoring.py."""
+# De webserver (Flask): de routes /api/... waar de frontend mee praat.
 import logging
 import os
 import uuid
@@ -29,12 +25,12 @@ CORS(app, resources={r'/api/*': {'origins': config.CORS_ORIGINS}})
 
 
 def error(message, status):
-    """Hulpfunctie: stuur een nette foutmelding terug als JSON."""
+    # Hulpfunctie: stuur een nette foutmelding terug als JSON.
     return jsonify({'status': 'error', 'message': message}), status
 
 
 def prepare_features(df):
-    """Maak de kolomnamen netjes en zorg dat alle features uit getallen bestaan."""
+    # Maak de kolomnamen netjes en zorg dat alle features uit getallen bestaan.
     # Alle kolomnamen klein maken, zodat 'Amount' ook werkt.
     nieuwe_namen = []
     for kolom in df.columns:
@@ -65,9 +61,8 @@ def prepare_features(df):
     return df
 
 
-# ---------------------------------------------------------------------- #
 # Routes
-# ---------------------------------------------------------------------- #
+
 # @app.route koppelt een webadres (URL) aan een functie: roept iemand
 # /api/health aan, dan draait de functie hieronder en wordt het resultaat
 # als antwoord teruggestuurd.
@@ -112,9 +107,8 @@ def upload():
             os.remove(filepath)
 
 
-# ---------------------------------------------------------------------- #
 # Veiligheid + foutafhandeling
-# ---------------------------------------------------------------------- #
+
 # @app.after_request draait NA elk verzoek; hier voegen we beveiligings-
 # regels toe aan elk antwoord (bv. niet in een iframe laden).
 @app.after_request
@@ -127,12 +121,12 @@ def add_security_headers(response):
 
 # @app.errorhandler vangt een bepaalde fout op. 413 = bestand te groot.
 @app.errorhandler(413)
-def too_large(e):
+def too_large(_e):
     return error('Bestand te groot. Maximum is ' + str(config.MAX_UPLOAD_MB) + ' MB.', 413)
 
 
 @app.errorhandler(404)
-def not_found(e):
+def not_found(_e):
     return error('Niet gevonden.', 404)
 
 
