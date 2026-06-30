@@ -51,6 +51,7 @@ class FraudDetector:
         # groter dan een uur (0-23), dus zonder schalen zou het bedrag veel te
         # zwaar meetellen. StandardScaler maakt van elke feature een getal rond 0.
         self.scaler = StandardScaler()
+        # fit_transform = de schaal LEREN van deze data en die meteen TOEPASSEN.
         X_scaled = self.scaler.fit_transform(X)
 
         # Het model: 200 willekeurige beslisbomen.
@@ -71,6 +72,7 @@ class FraudDetector:
     def predict(self, df):
         """Geef elke transactie een score, een label en een risiconiveau."""
         result = df.copy()
+        # transform (zonder 'fit'): dezelfde schaal als bij het trainen gebruiken.
         X_scaled = self.scaler.transform(df[self.FEATURES])
 
         # score_samples geeft per transactie een getal: hoe HOGER, hoe normaler.
@@ -78,7 +80,8 @@ class FraudDetector:
         scores = self.model.score_samples(X_scaled)
         result['anomaly_score'] = np.round(scores, 4)
 
-        # predict geeft -1 (afwijkend) of 1 (normaal). Wij maken er True/False van.
+        # predict geeft -1 (afwijkend) of 1 (normaal). Met '== -1' wordt het
+        # voor elke transactie True (afwijkend) of False (normaal).
         result['is_fraud'] = self.model.predict(X_scaled) == -1
 
         # De 5% laagste scores worden HIGH risico, de 15% laagste MEDIUM,
@@ -98,6 +101,8 @@ class FraudDetector:
         result['risk_level'] = risk_levels
 
         # Uitleg per transactie: waarom is ze (niet) verdacht?
+        # We zetten de lijsten in een kolom. 'index=result.index' zorgt dat elke
+        # uitleg bij de juiste rij belandt (anders verschuift de koppeling).
         contributions, reasons = self._explain(df)
         result['contributions'] = pd.Series(contributions, index=result.index)
         result['reasons'] = pd.Series(reasons, index=result.index)
@@ -119,6 +124,7 @@ class FraudDetector:
             freq = float(row['daily_frequency'])
 
             # Per feature een score van 0 tot 100 (100 = heel afwijkend).
+            # min(..., 100) kapt af op 100, zodat een enorm bedrag niet boven 100 uitkomt.
             amount_score = min(int(amount / 1500 * 100), 100)
 
             if hour < 6:
@@ -128,6 +134,8 @@ class FraudDetector:
             else:
                 hour_score = 10
 
+            # location_score loopt van 0 (onbekend) tot 1 (vertrouwd); '1 - loc'
+            # draait het om, zodat onbekend juist een HOGE verdachtheid geeft.
             location_score = int((1 - loc) * 100)
             frequency_score = min(int(freq / 25 * 100), 100)
 
@@ -151,7 +159,7 @@ class FraudDetector:
                 (location_score, 'een onbekende of ongewone locatie'),
                 (frequency_score, str(round(freq)) + ' transacties op een dag'),
             ]
-            # Hoogste score eerst.
+            # Sorteer op het eerste getal van elk paar (de score), hoogste eerst.
             candidates.sort(reverse=True)
 
             # Alleen de duidelijke signalen (score 35 of hoger) bewaren als tekst.
